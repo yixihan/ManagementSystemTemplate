@@ -1,0 +1,30 @@
+package com.yixihan.template.exception;
+
+import com.yixihan.template.enums.ExceptionEnums;
+
+import java.io.Serial;
+
+/**
+ * 认证异常
+ *
+ * @author yixihan
+ * @date 2024-05-21 15:15
+ */
+@SuppressWarnings("unused")
+public class AuthException extends BizException {
+
+    @Serial
+    private static final long serialVersionUID = -2690717359446057710L;
+
+    public AuthException() {
+        this(ExceptionEnums.AUTH_ERR);
+    }
+
+    public AuthException(ExceptionEnums enums) {
+        super(enums);
+    }
+
+    public AuthException(Throwable e) {
+        super(ExceptionEnums.AUTH_ERR, e);
+    }
+}

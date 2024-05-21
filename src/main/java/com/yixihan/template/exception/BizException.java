@@ -1,0 +1,34 @@
+package com.yixihan.template.exception;
+
+import com.yixihan.template.enums.ExceptionEnums;
+
+import java.io.Serial;
+
+/**
+ * 业务异常, 所有业务自定义异常均继承此类
+ *
+ * @author yixihan
+ * @date 2024-05-21 15:02
+ */
+@SuppressWarnings("unused")
+public class BizException extends BaseException {
+
+    @Serial
+    private static final long serialVersionUID = 1659049298300474679L;
+
+    public BizException() {
+        this(ExceptionEnums.FAILED_TYPE_BUSINESS);
+    }
+
+    public BizException(Throwable e) {
+        this(ExceptionEnums.FAILED_TYPE_BUSINESS, e);
+    }
+
+    public BizException(ExceptionEnums enums) {
+        super(enums);
+    }
+
+    public BizException(ExceptionEnums enums, Throwable e) {
+        super(enums, e);
+    }
+}
