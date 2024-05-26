@@ -1,8 +1,6 @@
 package com.yixihan.template.model;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableLogic;
+import com.baomidou.mybatisplus.annotation.*;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -31,14 +29,16 @@ public class BaseModel implements Serializable {
     @Serial
     private static final long serialVersionUID = 3291058324355093826L;
 
-    @Schema(description = "权限 id")
+    @Schema(description = "主键 id")
     @TableId(value = "id", type = IdType.AUTO)
     private Long id;
 
     @Schema(description = "创建时间")
+    @TableField(fill = FieldFill.INSERT)
     private Date createDate;
 
     @Schema(description = "更新时间")
+    @TableField(fill = FieldFill.INSERT_UPDATE)
     private Date updateDate;
 
     @Schema(description = "乐观锁")

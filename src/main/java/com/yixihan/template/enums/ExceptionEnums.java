@@ -54,6 +54,9 @@ public enum ExceptionEnums {
     // ====================== Auth Exception ======================
     AUTH_ERR(20001, "认证异常"),
     TOKEN_ERR(20002, "token 解析异常"),
+    TOKEN_EXPIRED(20003, "token 过期"),
+    NO_METHOD_ROLE(20004, "没有访问权限"),
+    ACCESS_DENIED(20005, "拒绝访问"),
 
 
     ;

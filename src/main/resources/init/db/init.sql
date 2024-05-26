@@ -60,7 +60,7 @@ create table if not exists `permission`
     `del_flag`        tinyint(1)       not null default 0 comment '逻辑删除',
 
     primary key (`id`),
-    index permission_code_idx (`permission_code`) using btree,
+    unique index permission_code_idx (`permission_code`) using btree,
     index permission_name_idx (`permission_name`) using btree,
     index permission_status_idx (`status`) using btree
 ) comment '权限表';
@@ -78,8 +78,8 @@ create table if not exists `user_role`
     `del_flag`    tinyint(1)       not null default 0 comment '逻辑删除',
 
     primary key (`id`),
-    index user_role_user_id_idx (`user_id`) using btree,
-    index user_role_role_id_idx (`role_id`) using btree
+    index user_id_idx (`user_id`) using btree,
+    index role_id_idx (`role_id`) using btree
 ) comment '用户-角色关联表';
 
 # role-permission association table
@@ -95,6 +95,50 @@ create table if not exists `role_permission`
     `del_flag`      tinyint(1)       not null default 0 comment '逻辑删除',
 
     primary key (`id`),
-    index role_permission_role_id_idx (`role_id`) using btree,
-    index role_permission_permission_id_idx (`permission_id`) using btree
+    index role_id_idx (`role_id`) using btree,
+    index permission_id_idx (`permission_id`) using btree
 ) comment '角色-权限关联表';
+
+drop table if exists job;
+create table if not exists job
+(
+    `id`                bigint(18) unsigned auto_increment comment '任务 id',
+    `job_code`          varchar(100)     not null comment '任务 code',
+    `job_name`          varchar(100)     not null comment '任务 name',
+    `job_desc`          varchar(100)     not null comment '任务描述',
+    `job_schedule`      varchar(30)      not null comment '任务执行周期[Adhoc: 无执行周期]',
+    `last_execute_date` datetime         null comment '任务上次执行时间',
+    `create_date`       datetime         not null comment '创建时间',
+    `update_date`       datetime         not null comment '更新时间',
+    `version`           int(11) unsigned not null default 1 comment '乐观锁',
+    `del_flag`          tinyint(1)       not null default 0 comment '逻辑删除',
+
+    primary key (`id`),
+    unique index job_code_idx (`job_code`) using btree
+) comment '任务表';
+
+drop table if exists `job_his`;
+create table if not exists `job_his`
+(
+    `id`          bigint(18) unsigned auto_increment comment '任务执行记录 id',
+    `job_id`      bigint(18) unsigned not null comment '任务 id',
+    `job_code`    varchar(100)        not null comment '任务 code',
+    `job_name`    varchar(100)        not null comment '任务 name',
+    `job_desc`    varchar(100)        not null comment '任务描述',
+    `job_status`  varchar(10)         not null comment '任务状态[PENDING: 准备中, RUNNING: 执行中, FAILED: 失败, SUCCESS: 成功]',
+    `job_params`  text                null comment '任务参数',
+    `start_date`  datetime            null comment '任务描述',
+    `finish_date` datetime            null comment '任务描述',
+    `err_msg`     varchar(500)        null comment '任务描述',
+    `err_trace`   text                null comment '任务上次执行时间',
+    `create_date` datetime            not null comment '创建时间',
+    `update_date` datetime            not null comment '更新时间',
+    `version`     int(11) unsigned    not null default 1 comment '乐观锁',
+    `del_flag`    tinyint(1)          not null default 0 comment '逻辑删除',
+
+    primary key (`id`),
+    index job_id_idx (`job_id`) using btree,
+    index job_status_idx (`job_status`) using btree,
+    index start_date_idx (`start_date`) using btree,
+    index finish_date_idx (`finish_date`) using btree
+) comment '任务执行记录表';

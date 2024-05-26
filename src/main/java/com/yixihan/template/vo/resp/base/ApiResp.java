@@ -93,6 +93,10 @@ public class ApiResp<T> {
     }
 
     // ====================== fail resp with exception ======================
+    public static <T> ApiResp<T> error(ExceptionEnums enums) {
+        return error(new BaseException(enums), null);
+    }
+
     public static <T> ApiResp<T> error(BaseException e) {
         return error(e, null);
     }

@@ -1,8 +1,8 @@
 package com.yixihan.template.service.impl;
 
-import com.yixihan.template.model.User;
-import com.yixihan.template.mapper.UserMapper;
-import com.yixihan.template.service.UserService;
+import com.yixihan.template.model.user.User;
+import com.yixihan.template.mapper.user.UserMapper;
+import com.yixihan.template.service.user.UserService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
 
