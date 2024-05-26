@@ -4,7 +4,7 @@ import cn.hutool.core.util.StrUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.yixihan.template.auth.config.AuthConfig;
 import com.yixihan.template.auth.service.AuthService;
-import com.yixihan.template.constant.AuthConstant;
+import com.yixihan.template.auth.constant.AuthConstant;
 import com.yixihan.template.enums.ExceptionEnums;
 import com.yixihan.template.exception.BizException;
 import com.yixihan.template.vo.resp.base.ApiResp;
@@ -40,12 +40,12 @@ public class AuthFilter implements Filter {
     /**
      * 过滤器详细规则
      * <p>
-     * <li>白名单 : 直接放行</li>
-     * <li>跨域的预检请求[Options] : 直接放行</li>
-     * <li>请求头无 token : 快速失败 {@code BizCodeEnum.TOKEN_EXPIRED}</li>
-     * <li>token 校验不通过 : 快速失败 {@code BizCodeEnum.TOKEN_ERR}</li>
-     * <li>权限校验不通过 : 快速失败 {@code BizCodeEnum.NO_METHOD_ROLE}</li>
-     * <li>以上校验均通过 : 放行</li>
+     * <li>白名单: 直接放行</li>
+     * <li>跨域的预检请求[Options]: 直接放行</li>
+     * <li>请求头无 token: 快速失败 {@code BizCodeEnum.TOKEN_EXPIRED}</li>
+     * <li>token 校验不通过: 快速失败 {@code BizCodeEnum.TOKEN_ERR}</li>
+     * <li>权限校验: 通过切片去处理</li>
+     * <li>以上校验均通过: 放行</li>
      * </p>
      */
     @Override
@@ -81,12 +81,6 @@ public class AuthFilter implements Filter {
             // 认证校验
             if (authService.authentication(token) == null) {
                 out(response, ExceptionEnums.TOKEN_ERR);
-                return;
-            }
-
-            // 权限校验
-            if (Boolean.FALSE.equals(authService.authorization(token, uri))) {
-                out(response, ExceptionEnums.NO_METHOD_ROLE);
                 return;
             }
 

@@ -20,6 +20,10 @@ public class AuthException extends BizException {
         this(ExceptionEnums.AUTH_ERR);
     }
 
+    public AuthException(String message) {
+        super(message);
+    }
+
     public AuthException(ExceptionEnums enums) {
         super(enums);
     }

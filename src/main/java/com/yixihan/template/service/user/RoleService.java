@@ -2,6 +2,10 @@ package com.yixihan.template.service.user;
 
 import com.yixihan.template.model.user.Role;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.yixihan.template.vo.resp.user.PermissionVO;
+import com.yixihan.template.vo.resp.user.RoleVO;
+
+import java.util.List;
 
 /**
  * <p>
@@ -13,4 +17,17 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface RoleService extends IService<Role> {
 
+    /**
+     * 获取用户的角色信息
+     * @param userId 用户 id
+     * @return {@code List<RoleVO>}
+     */
+    List<RoleVO> getUserRoleList(Long userId);
+
+    /**
+     * 获取用户的权限信息
+     * @param userId 用户 id
+     * @return {@code List<PermissionVO>}
+     */
+    List<PermissionVO> getUserPermissionList(Long userId);
 }

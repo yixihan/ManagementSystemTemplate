@@ -22,6 +22,11 @@ public class BaseException extends RuntimeException {
 
     protected final String message;
 
+    public BaseException(String message) {
+        super(message);
+        this.message = message;
+        this.code = 500;
+    }
 
     public BaseException(ExceptionEnums enums) {
         super(enums.getMessage());

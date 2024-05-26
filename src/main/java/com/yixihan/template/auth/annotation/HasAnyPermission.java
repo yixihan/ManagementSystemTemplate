@@ -24,11 +24,6 @@ public @interface HasAnyPermission {
     boolean allowAnonymousUser() default false;
 
     /**
-     * 是否允许登录用户访问
-     */
-    boolean allowLoginUser() default true;
-
-    /**
      * 访问所需的权限 code
      */
     PermissionEnums[] permissionCode() default {};

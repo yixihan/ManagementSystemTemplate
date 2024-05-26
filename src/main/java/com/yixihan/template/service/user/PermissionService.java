@@ -2,6 +2,10 @@ package com.yixihan.template.service.user;
 
 import com.yixihan.template.model.user.Permission;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.yixihan.template.vo.resp.user.PermissionVO;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -13,4 +17,19 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface PermissionService extends IService<Permission> {
 
+    /**
+     * 获取 role 对应的权限列表
+     *
+     * @param roleIdList role id list
+     * @return {@code Map<Long, List<PermissionVO>>}
+     */
+    Map<Long, List<PermissionVO>> getRolePermission(List<Long> roleIdList);
+
+    /**
+     * 获取 role 对应的权限列表
+     *
+     * @param roleId role id
+     * @return {@code List<PermissionVO>}
+     */
+    List<PermissionVO> getRolePermission(Long roleId);
 }

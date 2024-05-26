@@ -9,7 +9,7 @@ import org.aspectj.lang.annotation.Aspect;
 import org.springframework.stereotype.Component;
 
 /**
- * description
+ * 权限注解 切片处理器
  *
  * @author yixihan
  * @date 2024-05-23 14:13

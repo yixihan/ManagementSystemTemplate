@@ -1,4 +1,4 @@
-package com.yixihan.template.constant;
+package com.yixihan.template.auth.constant;
 
 /**
  * 权限认证 常量

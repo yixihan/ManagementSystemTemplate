@@ -57,6 +57,8 @@ public enum ExceptionEnums {
     TOKEN_EXPIRED(20003, "token 过期"),
     NO_METHOD_ROLE(20004, "没有访问权限"),
     ACCESS_DENIED(20005, "拒绝访问"),
+    ACCOUNT_NOT_FOUND(20006, "找不到该账号"),
+    PASSWORD_ERR(20007, "密码错误"),
 
 
     ;

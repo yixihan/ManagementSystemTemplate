@@ -1,10 +1,10 @@
 package com.yixihan.template.auth.cache;
 
 import cn.hutool.json.JSONUtil;
-import com.yixihan.template.constant.AuthConstant;
+import com.yixihan.template.auth.constant.AuthConstant;
 import com.yixihan.template.enums.ExceptionEnums;
 import com.yixihan.template.util.Assert;
-import com.yixihan.template.vo.resp.auth.AuthVO;
+import com.yixihan.template.vo.resp.user.AuthVO;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;

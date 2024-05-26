@@ -20,6 +20,10 @@ public class BizException extends BaseException {
         this(ExceptionEnums.FAILED_TYPE_BUSINESS);
     }
 
+    public BizException(String message) {
+        super(message);
+    }
+
     public BizException(Throwable e) {
         this(ExceptionEnums.FAILED_TYPE_BUSINESS, e);
     }
