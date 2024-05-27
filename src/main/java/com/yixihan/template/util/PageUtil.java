@@ -93,6 +93,10 @@ public class PageUtil {
         return new Page<>(req.getPage(), req.getPageSize(), req.getSearchCount());
     }
 
+    public static <T> PageVO<T> emptyPage() {
+        return new PageVO<>(0L, 0L, 0L, 0L, List.of());
+    }
+
     private static CopyOptions getCopyOption() {
         CopyOptions copyOptions = new CopyOptions();
         copyOptions.ignoreError();

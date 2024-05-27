@@ -1,6 +1,7 @@
 package com.yixihan.template.util;
 
-import com.yixihan.template.exception.AuthException;
+import cn.hutool.core.util.StrUtil;
+import com.yixihan.template.exception.*;
 
 /**
  * description
@@ -12,5 +13,21 @@ public class Panic {
 
     public static void noAuth(String errMsg) {
         throw new AuthException(errMsg);
+    }
+
+    public static void noSuchJob(String errMsg) {
+        throw new JobException(errMsg);
+    }
+
+    public static void noSuchEntry(Long id) {
+        throw new InvalidEntryException(StrUtil.format("can not find Entry[Id : {}]", id));
+    }
+
+    public static void invalidStatus(String mark) {
+        throw new InvalidStatusException(StrUtil.format("Entry[{}] status is invalid", mark));
+    }
+
+    public static void invalidParam(String param) {
+        throw new InvalidParameterException(StrUtil.format("req param[{}] is invalid", param));
     }
 }

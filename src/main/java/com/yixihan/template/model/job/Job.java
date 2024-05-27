@@ -41,6 +41,9 @@ public class Job extends BaseModel {
     @Schema(description = "任务执行周期[Adhoc: 无执行周期]")
     private String jobSchedule;
 
+    @Schema(description = "任务状态[有效: VALID, 无效: INVALID]")
+    private String jobStatus;
+
     @Schema(description = "任务上次执行时间")
     private Date lastExecuteDate;
 

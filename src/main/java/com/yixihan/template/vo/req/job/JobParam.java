@@ -24,7 +24,12 @@ public class JobParam implements Serializable {
     @Serial
     private static final long serialVersionUID = -7970458253563174303L;
 
+    @Schema(description = "任务 code")
+    private String jobCode;
+
+    @Schema(description = "任务执行时间")
     private Date jobExecuteDate;
 
+    @Schema(description = "其余参数, json 格式")
     private String details;
 }

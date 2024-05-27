@@ -16,6 +16,11 @@ public class InvalidParameterException extends BizException {
     @Serial
     private static final long serialVersionUID = 3182914630424422322L;
 
+
+    public InvalidParameterException(String message) {
+        super(message);
+    }
+
     public InvalidParameterException() {
         super(ExceptionEnums.FAILED_TYPE_BUSINESS);
     }

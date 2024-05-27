@@ -5,6 +5,7 @@ import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.exceptions.ExceptionUtil;
 import cn.hutool.core.util.ObjUtil;
 import cn.hutool.json.JSONUtil;
+import com.yixihan.template.enums.CommonStatusEnums;
 import com.yixihan.template.enums.JobStatusEnums;
 import com.yixihan.template.model.job.Job;
 import com.yixihan.template.model.job.JobHis;
@@ -21,7 +22,7 @@ import java.util.Date;
 import static org.springframework.transaction.annotation.Isolation.REPEATABLE_READ;
 
 /**
- * JobInterface 执行器
+ * Job 执行器
  *
  * @author yixihan
  * @date 2024-05-24 10:55
@@ -54,14 +55,16 @@ public class JobRunner {
      */
     @Transactional(isolation = REPEATABLE_READ, rollbackFor = Throwable.class)
     public void runJob(JobInterface jobInterface, JobParam param) {
-        log.info("job[{}] start run", jobInterface.jobName());
-
         Job job;
         JobHis jobHis;
 
         try {
             // 获取 job & 初始化 jobHis
             job = getJob(jobInterface);
+            if (CommonStatusEnums.INVALID.name().equals(job.getJobStatus())) {
+                log.info("job[{}] is invalid, jump over", jobInterface.jobName());
+                return;
+            }
             jobHis = initJobHis(job, param);
         } catch (Throwable e) {
             log.error("job[{}] init err, msg: {}", jobInterface.jobName(), e.getMessage());
@@ -69,6 +72,7 @@ public class JobRunner {
         }
 
         try {
+            log.info("job[{}] start run", jobInterface.jobName());
             Date startDate = new Date();
             job.setLastExecuteDate(startDate);
             jobHis.setStartDate(startDate);
@@ -110,6 +114,7 @@ public class JobRunner {
             job.setJobName(jobInterface.jobName());
             job.setJobDesc(jobInterface.jobDescription());
             job.setJobSchedule(jobInterface.jobSchedule());
+            job.setJobStatus(CommonStatusEnums.VALID.name());
             jobService.save(job);
         }
         return job;

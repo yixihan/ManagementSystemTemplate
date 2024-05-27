@@ -5,6 +5,9 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.Serial;
+import java.io.Serializable;
+
 /**
  * 分页请求-req
  *
@@ -15,8 +18,11 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Schema(description = "分页请求-req")
-public class PageReq {
+public class PageReq implements Serializable {
 
+    @Serial
+    private static final long serialVersionUID = 1311047905785118874L;
+    
     @Schema(description = "页码")
     private Long page = 0L;
 
