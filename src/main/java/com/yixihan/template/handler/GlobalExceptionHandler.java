@@ -1,7 +1,9 @@
 package com.yixihan.template.handler;
 
+import cn.hutool.core.util.StrUtil;
 import com.yixihan.template.exception.BaseException;
 import com.yixihan.template.exception.BizException;
+import com.yixihan.template.util.EnvUtil;
 import com.yixihan.template.vo.resp.base.ApiResp;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -24,7 +26,7 @@ public class GlobalExceptionHandler {
     @ResponseBody
     @ExceptionHandler(value = BaseException.class)
     public ApiResp<Object> handleSystemException(BaseException e) {
-        log.error("出现异常", e);
+        logError(e);
         return ApiResp.error(e.getMessage());
     }
 
@@ -34,7 +36,7 @@ public class GlobalExceptionHandler {
     @ResponseBody
     @ExceptionHandler(value = BizException.class)
     public ApiResp<Object> handleBizException(BizException e) {
-        log.error("业务异常", e);
+        logError(e);
         return ApiResp.error(e.getMessage());
     }
 
@@ -42,14 +44,14 @@ public class GlobalExceptionHandler {
     @ResponseBody
     @ExceptionHandler(value = NullPointerException.class)
     public ApiResp<Object> handleNullPointerException(NullPointerException e) {
-        log.error("出现异常", e);
+        logError(e);
         return ApiResp.error(e.getMessage());
     }
 
     @ResponseBody
     @ExceptionHandler(value = RuntimeException.class)
     public ApiResp<Object> handleRuntimeException(RuntimeException e) {
-        log.error("出现异常", e);
+        logError(e);
         return ApiResp.error(e.getMessage());
     }
 
@@ -57,7 +59,15 @@ public class GlobalExceptionHandler {
     @ResponseBody
     @ExceptionHandler(value = Exception.class)
     public ApiResp<Object> handleException(Exception e) {
-        log.error("出现异常", e);
+        logError(e);
         return ApiResp.error(e.getMessage());
+    }
+
+    private static void logError(Throwable e) {
+        if (EnvUtil.dev()) {
+            log.error(StrUtil.format("出现异常, {}", e.getMessage()), e);
+        } else {
+            log.error("出现异常, {}", e.getMessage());
+        }
     }
 }

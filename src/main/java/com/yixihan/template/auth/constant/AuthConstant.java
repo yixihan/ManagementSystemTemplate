@@ -12,7 +12,7 @@ public class AuthConstant {
     private AuthConstant() {
     }
 
-    public static final String JWT_TOKEN = "Jwt-Token";
+    public static final String JWT_TOKEN = "token";
 
     public static final String AUTH_KEY = "authCache";
 

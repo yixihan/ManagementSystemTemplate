@@ -8,6 +8,7 @@ import com.yixihan.template.auth.cache.AuthCacheService;
 import com.yixihan.template.auth.constant.AuthConstant;
 import com.yixihan.template.auth.enums.PermissionEnums;
 import com.yixihan.template.enums.ExceptionEnums;
+import com.yixihan.template.enums.LoginTypeEnums;
 import com.yixihan.template.exception.AuthException;
 import com.yixihan.template.model.user.User;
 import com.yixihan.template.service.user.RoleService;
@@ -15,16 +16,22 @@ import com.yixihan.template.service.user.UserService;
 import com.yixihan.template.util.AppContext;
 import com.yixihan.template.util.Assert;
 import com.yixihan.template.util.JwtUtil;
+import com.yixihan.template.util.Panic;
+import com.yixihan.template.vo.req.user.UserLoginReq;
+import com.yixihan.template.vo.req.user.UserLoginValidateReq;
 import com.yixihan.template.vo.resp.user.AuthVO;
 import com.yixihan.template.vo.resp.user.PermissionVO;
 import com.yixihan.template.vo.resp.user.RoleVO;
 import com.yixihan.template.vo.resp.user.UserVO;
 import jakarta.annotation.Resource;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.Signature;
 import org.aspectj.lang.reflect.MethodSignature;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.lang.reflect.Method;
@@ -50,6 +57,12 @@ public class AuthService {
 
     @Resource
     private AuthCacheService cacheService;
+
+    @Resource
+    private RedisTemplate<String, Object> redisTemplate;
+
+    @Resource
+    private HttpServletRequest request;
 
     public AuthVO authentication(String token) {
         // 从 token 种获取 userId
@@ -84,6 +97,52 @@ public class AuthService {
         return authInfo;
     }
 
+    public AuthVO authentication(UserLoginReq req) {
+        switch (LoginTypeEnums.valueOf(req.getLoginType())) {
+            case EMAIL -> {
+                return authenticationByEmail(req);
+            }
+            case MOBILE -> {
+                return authenticationByMobile(req);
+            }
+            case PASSWORD -> {
+                return authenticationByPwd(req);
+            }
+            default -> throw new AuthException("unknown login in type");
+        }
+    }
+
+    private AuthVO authenticationByPwd(UserLoginReq req) {
+        return new AuthVO();
+    }
+
+    private AuthVO authenticationByEmail(UserLoginReq req) {
+        return new AuthVO();
+    }
+
+    private AuthVO authenticationByMobile(UserLoginReq req) {
+        return new AuthVO();
+    }
+
+    public String getLoginValidateCode(UserLoginValidateReq req) {
+        return null;
+    }
+
+    public ResponseEntity<byte[]> getValidatePicture(String uuid) {
+
+        return null;
+    }
+
+    /**
+     * <p>权限认证处理</p>
+     * <li>1. 接口无 {@link HasAnyPermission} 注解: 接口无权限控制, 所有人皆可访问</li>
+     * <li>2. 接口 {@link HasAnyPermission} 注解 {@code allowAnonymousUser} 设置为 {@code true}: 接口可匿名访问</li>
+     * <li>3. 接口 {@link HasAnyPermission} 注解 {@code allowAnonymousUser} 设置为 {@code false}: 接口不可匿名访问, 校验 token 是否正确</li>
+     * <li>4. 接口 {@link HasAnyPermission} 注解 {@code permissionCode} 为空: 接口无权限控制, 登录用户皆可访问</li>
+     * <li>5. 接口 {@link HasAnyPermission} 注解 {@code permissionCode} 不为空: 接口有权限控制, 校验登录用户全新 </li>
+     *
+     * @param joinPoint joinPoint
+     */
     public Object hasAnyAuthorityCheck(ProceedingJoinPoint joinPoint) {
         if (ObjUtil.isNull(joinPoint)) {
             return null;
@@ -92,27 +151,38 @@ public class AuthService {
         try {
             HasAnyPermission permission = getHasAnyPermission(joinPoint);
 
-            // api 无该注解, 直接放行
+            // 1. api 无该注解, 直接放行
             if (ObjUtil.isNull(permission)) {
                 return joinPoint.proceed();
             }
-            // api 允许匿名用户访问, 直接放行
+            // 2. api 允许匿名用户访问, 直接放行
             if (permission.allowAnonymousUser()) {
                 return joinPoint.proceed();
             }
 
+            // 3. 校验 token 是否正确
+            // 获取并注入HttpServletRequest
+            String token = request.getHeader(AuthConstant.JWT_TOKEN);
+            if (ObjUtil.isNull(authentication(token))) {
+                Panic.noAuth(ExceptionEnums.TOKEN_ERR);
+            }
+
             PermissionEnums[] permissionCodes = permission.permissionCode();
-            if (ArrayUtil.isNotEmpty(permissionCodes)) {
-                boolean permitted = hasPermissions(permissionCodes);
-                if (!permitted) {
-                    log.error("Access Denied to {}", joinPoint.getSignature().toLongString());
-                    throw new AuthException(ExceptionEnums.ACCESS_DENIED);
-                }
+
+            // 4. permissionCode 为空
+            if (ArrayUtil.isEmpty(permissionCodes)) {
+                return joinPoint.proceed();
+            }
+
+            // 5. 校验 permissionCode
+            boolean permitted = hasPermissions(permissionCodes);
+            if (!permitted) {
+                log.error("Access Denied to {}", joinPoint.getSignature().toLongString());
+                Panic.noAuth(ExceptionEnums.NO_METHOD_ROLE);
             }
 
             return joinPoint.proceed();
-        } catch (
-                Throwable e) {
+        } catch (Throwable e) {
             throw new AuthException(e);
         }
     }

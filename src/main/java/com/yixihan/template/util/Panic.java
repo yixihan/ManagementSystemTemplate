@@ -1,6 +1,7 @@
 package com.yixihan.template.util;
 
 import cn.hutool.core.util.StrUtil;
+import com.yixihan.template.enums.ExceptionEnums;
 import com.yixihan.template.exception.*;
 
 /**
@@ -13,6 +14,10 @@ public class Panic {
 
     public static void noAuth(String errMsg) {
         throw new AuthException(errMsg);
+    }
+
+    public static void noAuth(ExceptionEnums enums) {
+        throw new AuthException(enums);
     }
 
     public static void noSuchJob(String errMsg) {
