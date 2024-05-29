@@ -4,7 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 /**
- * description
+ * 登录方式枚举
  *
  * @author yixihan
  * @date 2024-05-28 14:23
@@ -16,7 +16,7 @@ public enum LoginTypeEnums {
     PASSWORD("PASSWORD", "密码登录"),
     EMAIL("EMAIL", "邮件登录"),
     MOBILE("MOBILE", "手机号登录"),
-
+    TOKEN("TOKEN", "token登录")
     ;
 
     private final String type;

@@ -30,8 +30,6 @@ import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.Signature;
 import org.aspectj.lang.reflect.MethodSignature;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.lang.reflect.Method;
@@ -57,9 +55,6 @@ public class AuthService {
 
     @Resource
     private AuthCacheService cacheService;
-
-    @Resource
-    private RedisTemplate<String, Object> redisTemplate;
 
     @Resource
     private HttpServletRequest request;
@@ -125,10 +120,6 @@ public class AuthService {
     }
 
     public String getLoginValidateCode(UserLoginValidateReq req) {
-        return null;
-    }
-
-    public ResponseEntity<byte[]> getValidatePicture(String uuid) {
 
         return null;
     }

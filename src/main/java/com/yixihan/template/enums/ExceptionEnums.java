@@ -59,6 +59,13 @@ public enum ExceptionEnums {
     ACCESS_DENIED(20005, "拒绝访问"),
     ACCOUNT_NOT_FOUND(20006, "找不到该账号"),
     PASSWORD_ERR(20007, "密码错误"),
+    CODE_EXPIRE_ERR(200008, "验证码过期"),
+    CODE_VALIDATE_ERROR(200009, "验证码校验错误"),
+
+
+    // ====================== Third Exception ======================
+    PICTURE_CODE_ERR(300001, "图片验证码生成异常"),
+    PICTURE_QR_ERR(300002, "二维码生成异常"),
 
 
     ;

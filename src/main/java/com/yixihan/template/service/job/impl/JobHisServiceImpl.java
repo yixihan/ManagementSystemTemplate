@@ -1,4 +1,4 @@
-package com.yixihan.template.service.impl.job;
+package com.yixihan.template.service.job.impl;
 
 import com.yixihan.template.model.job.JobHis;
 import com.yixihan.template.mapper.job.JobHisMapper;

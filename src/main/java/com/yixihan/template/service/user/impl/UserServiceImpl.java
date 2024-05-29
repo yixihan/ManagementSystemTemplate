@@ -1,4 +1,4 @@
-package com.yixihan.template.service.impl;
+package com.yixihan.template.service.user.impl;
 
 import com.yixihan.template.model.user.User;
 import com.yixihan.template.mapper.user.UserMapper;

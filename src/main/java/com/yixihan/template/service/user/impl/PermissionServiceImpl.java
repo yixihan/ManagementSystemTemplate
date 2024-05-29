@@ -1,4 +1,4 @@
-package com.yixihan.template.service.impl.user;
+package com.yixihan.template.service.user.impl;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollUtil;

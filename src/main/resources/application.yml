@@ -114,3 +114,54 @@ springdoc:
   swagger-ui:
     path: /swagger-ui
     operations-sorter: method
+
+# 第三方服务配置
+third:
+  # 验证码配置
+  code:
+    # 验证码生成长度
+    len: ${app.third.code.len}
+    # 验证码有效期, 单位: min
+    time-out: ${app.third.code.time-out}
+    # 验证码 Redis key
+    common-key: ${app.third.code.common-key}
+  
+  # 短信配置
+  sms:
+    # mock
+    mock: ${app.third.sms.mock}
+    # sms 接口配置
+    secret-id: ${app.third.sms.secret-id}
+    secret-key: ${app.third.sms.secret-key}
+    sms-sdk-app-id: ${app.third.sms.sms-sdk-app-id}
+    sign-name: ${app.third.sms.sign-name}
+
+    # redis key
+    login-key: ${app.third.sms.login-key}
+    register-key: ${app.third.sms.register-key}
+    update-password-key: ${app.third.sms.update-password-key}
+    common-key: ${app.third.sms.common-key}
+
+  # 邮件配置
+  email:
+    # mock
+    mock: ${app.third.email.mock}
+    # 邮件发送人姓名
+    send-email: ${app.third.email.send-email}
+    # 标题
+    title: ${app.name}
+
+    # redis key
+    login-key: ${app.third.email.login-key}
+    register-key: ${app.third.email.register-key}
+    update-password-key: ${app.third.email.update-password-key}
+    common-key: ${app.third.email.common-key}
+
+  # 对象存储配置
+  os:
+    type: ${app.third.os.type}
+    access-key: ${app.third.os.access-key}
+    secret-key: ${app.third.os.secret-key}
+    endpoint: ${app.third.os.endpoint}
+    bucket-name: ${app.third.os.bucket-name}
+    host: ${app.third.os.host}

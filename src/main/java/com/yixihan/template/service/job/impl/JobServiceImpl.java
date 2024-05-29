@@ -1,4 +1,4 @@
-package com.yixihan.template.service.impl.job;
+package com.yixihan.template.service.job.impl;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.ObjUtil;

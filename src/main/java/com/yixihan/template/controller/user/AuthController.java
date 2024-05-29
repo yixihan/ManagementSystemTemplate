@@ -2,6 +2,7 @@ package com.yixihan.template.controller.user;
 
 import com.yixihan.template.auth.annotation.HasAnyPermission;
 import com.yixihan.template.auth.service.AuthService;
+import com.yixihan.template.service.third.PictureService;
 import com.yixihan.template.vo.req.user.UserLoginReq;
 import com.yixihan.template.vo.req.user.UserLoginValidateReq;
 import com.yixihan.template.vo.resp.base.ApiResp;
@@ -9,7 +10,7 @@ import com.yixihan.template.vo.resp.user.AuthVO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
-import org.springframework.http.ResponseEntity;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.web.bind.annotation.*;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
@@ -28,6 +29,9 @@ public class AuthController {
     @Resource
     private AuthService authService;
 
+    @Resource
+    private PictureService pictureService;
+
     @Operation(summary = "登录")
     @HasAnyPermission(allowAnonymousUser = true)
     @PostMapping(value = "/login", produces = APPLICATION_JSON_VALUE)
@@ -45,7 +49,7 @@ public class AuthController {
     @Operation(summary = "获取验证码(图片)")
     @HasAnyPermission(allowAnonymousUser = true)
     @GetMapping(value = "/validate/picture", produces = APPLICATION_JSON_VALUE)
-    public ResponseEntity<byte[]> getValidatePicture(@RequestParam("uuid") String uuid) {
-        return authService.getValidatePicture(uuid);
+    public void getValidatePicture(@RequestParam("uuid") String uuid, HttpServletResponse response) {
+        pictureService.generateValidatePicture(uuid, response);
     }
 }

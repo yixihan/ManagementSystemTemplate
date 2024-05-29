@@ -1,4 +1,4 @@
-package com.yixihan.template.service.impl.user;
+package com.yixihan.template.service.user.impl;
 
 import com.yixihan.template.model.user.RolePermission;
 import com.yixihan.template.mapper.user.RolePermissionMapper;

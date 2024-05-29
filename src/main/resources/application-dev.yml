@@ -15,3 +15,52 @@ app:
     port: 6379
     db: 11
     password: 123456
+
+  # 第三方服务配置 变量用 {} 表示
+  third:
+    # 验证码配置
+    code:
+      # 验证码生成长度
+      len: 5
+      # 验证码有效期, 单位: min
+      time-out: 10
+      # 验证码 Redis key
+      common-key: picture::common::{}
+
+    # 短信配置
+    sms:
+      # mock
+      mock: true
+      # sms 接口配置
+      secret-id: secretId
+      secret-key: secretKey
+      sms-sdk-app-id: smsSdkAppId
+      sign-name: signName
+
+      # redis key
+      login-key: sms::login::{}
+      register-key: sms::register::{}
+      update-password-key: sms::password::{}
+      common-key: sms::common::{}
+
+    # 邮件配置
+    email:
+      # mock
+      mock: true
+      # 邮件发送人姓名
+      send-email: 1@1.com
+
+      # redis key
+      login-key: email::login::{}
+      register-key: email::register::{}
+      update-password-key: email::password::{}
+      common-key: email::common::{}
+
+    # 对象存储配置
+    os:
+      type: type
+      access-key: access-key
+      secret-key: secret-key
+      endpoint: endpoint
+      bucket-name: bucket-name
+      host: host
