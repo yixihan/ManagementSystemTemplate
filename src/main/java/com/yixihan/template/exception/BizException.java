@@ -25,14 +25,10 @@ public class BizException extends BaseException {
     }
 
     public BizException(Throwable e) {
-        this(ExceptionEnums.FAILED_TYPE_BUSINESS, e);
+        super(e);
     }
 
     public BizException(ExceptionEnums enums) {
         super(enums);
-    }
-
-    public BizException(ExceptionEnums enums, Throwable e) {
-        super(enums, e);
     }
 }

@@ -10,6 +10,7 @@ import com.yixihan.template.auth.enums.PermissionEnums;
 import com.yixihan.template.enums.ExceptionEnums;
 import com.yixihan.template.enums.LoginTypeEnums;
 import com.yixihan.template.exception.AuthException;
+import com.yixihan.template.exception.BizException;
 import com.yixihan.template.model.user.User;
 import com.yixihan.template.service.user.RoleService;
 import com.yixihan.template.service.user.UserService;
@@ -18,7 +19,6 @@ import com.yixihan.template.util.Assert;
 import com.yixihan.template.util.JwtUtil;
 import com.yixihan.template.util.Panic;
 import com.yixihan.template.vo.req.user.UserLoginReq;
-import com.yixihan.template.vo.req.user.UserLoginValidateReq;
 import com.yixihan.template.vo.resp.user.AuthVO;
 import com.yixihan.template.vo.resp.user.PermissionVO;
 import com.yixihan.template.vo.resp.user.RoleVO;
@@ -119,11 +119,6 @@ public class AuthService {
         return new AuthVO();
     }
 
-    public String getLoginValidateCode(UserLoginValidateReq req) {
-
-        return null;
-    }
-
     /**
      * <p>权限认证处理</p>
      * <li>1. 接口无 {@link HasAnyPermission} 注解: 接口无权限控制, 所有人皆可访问</li>
@@ -174,7 +169,7 @@ public class AuthService {
 
             return joinPoint.proceed();
         } catch (Throwable e) {
-            throw new AuthException(e);
+            throw new BizException(e);
         }
     }
 

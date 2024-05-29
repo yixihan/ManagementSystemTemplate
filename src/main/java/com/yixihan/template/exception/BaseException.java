@@ -34,9 +34,9 @@ public class BaseException extends RuntimeException {
         this.code = enums.getCode();
     }
 
-    public BaseException(ExceptionEnums enums, Throwable e) {
-        super(enums.getMessage(), e);
-        this.message = enums.getMessage();
-        this.code = enums.getCode();
+    public BaseException(Throwable e) {
+        super(e.getMessage(), e);
+        this.message = e.getMessage();
+        this.code = 500;
     }
 }

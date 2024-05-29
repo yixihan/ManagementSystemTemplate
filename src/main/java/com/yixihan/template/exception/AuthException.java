@@ -29,6 +29,6 @@ public class AuthException extends BizException {
     }
 
     public AuthException(Throwable e) {
-        super(ExceptionEnums.AUTH_ERR, e);
+        super(e);
     }
 }

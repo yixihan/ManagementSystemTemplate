@@ -2,8 +2,7 @@ package com.yixihan.template.service.third;
 
 import com.yixihan.template.enums.CodeTypeEnums;
 import com.yixihan.template.vo.req.third.CodeValidateReq;
-import com.yixihan.template.vo.req.third.EmailSendReq;
-import com.yixihan.template.vo.req.third.SmsSendReq;
+import com.yixihan.template.vo.req.third.SendCodeReq;
 
 /**
  * 验证码 服务
@@ -40,23 +39,23 @@ public interface CodeService {
     /**
      * 邮件发送
      *
-     * @param dtoReq 请求参数
+     * @param req 请求参数
      */
-    String sendEmail(EmailSendReq dtoReq);
+    String sendEmail(SendCodeReq req);
 
     /**
      * 邮件验证码验证
      *
-     * @param dtoReq 请求参数
+     * @param req 请求参数
      */
-    void validateEmail(CodeValidateReq dtoReq);
+    void validateEmail(CodeValidateReq req);
 
     /**
      * 发送短信
      *
      * @param req 请求参数
      */
-    String sendSms(SmsSendReq req);
+    String sendSms(SendCodeReq req);
 
     /**
      * 校验短信验证码

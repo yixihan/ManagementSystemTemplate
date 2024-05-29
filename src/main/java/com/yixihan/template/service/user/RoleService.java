@@ -30,4 +30,11 @@ public interface RoleService extends IService<Role> {
      * @return {@code List<PermissionVO>}
      */
     List<PermissionVO> getUserPermissionList(Long userId);
+
+    /**
+     * 获取用户角色 id
+     * @return 用户角色 id
+     */
+    Long getUserRoleId();
+
 }

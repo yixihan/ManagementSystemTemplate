@@ -84,6 +84,14 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements Ro
         return new ArrayList<>(permissionSet);
     }
 
+    @Override
+    public Long getUserRoleId() {
+        return lambdaQuery()
+                .eq(Role::getRoleCode, "USER")
+                .one()
+                .getId();
+    }
+
     private List<Long> getUserRoleIdList(Long userId) {
         if (ObjUtil.isNull(userId)) {
             return List.of();

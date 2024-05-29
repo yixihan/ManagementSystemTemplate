@@ -26,6 +26,6 @@ public class InvalidParameterException extends BizException {
     }
 
     public InvalidParameterException(Throwable e) {
-        super(ExceptionEnums.PARAMS_VALID_ERR, e);
+        super(e);
     }
 }

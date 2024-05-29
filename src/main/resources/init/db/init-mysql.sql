@@ -12,7 +12,7 @@ create table if not exists `user`
     `id`            bigint(18) unsigned auto_increment comment '用户 id',
     `user_name`     varchar(50)      not null comment '用户名',
     `user_password` varchar(255)     not null comment '用户密码',
-    `user_sale`     char(10)         not null comment '用户盐',
+    `user_salt`     char(10)         not null comment '用户盐',
     `user_email`    varchar(100)     null comment '用户邮箱',
     `user_mobile`   char(11)         null comment '用户手机号',
 # other filed ...
@@ -158,3 +158,8 @@ create table if not exists `template`
     primary key (`id`),
     unique index type_idx (`template_code`) using btree
 ) comment '模板表';
+
+insert into role(role_code, role_name, status, create_date, update_date)
+values
+    ('USER', 'user', 'VALID', now(), now()),
+    ('ADMIN', 'admin', 'VALID', now(), now());

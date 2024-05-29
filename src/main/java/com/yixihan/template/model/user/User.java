@@ -34,7 +34,7 @@ public class User extends BaseModel {
     private String userPassword;
 
     @Schema(description = "用户盐")
-    private String userSale;
+    private String userSalt;
 
     @Schema(description = "用户邮箱")
     private String userEmail;
@@ -48,7 +48,7 @@ public class User extends BaseModel {
 
     public static final String USER_PASSWORD = "user_password";
 
-    public static final String USER_SALE = "user_sale";
+    public static final String USER_SALT = "user_salt";
 
     public static final String USER_EMAIL = "user_email";
 

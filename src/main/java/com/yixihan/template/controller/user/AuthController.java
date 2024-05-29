@@ -2,15 +2,14 @@ package com.yixihan.template.controller.user;
 
 import com.yixihan.template.auth.annotation.HasAnyPermission;
 import com.yixihan.template.auth.service.AuthService;
-import com.yixihan.template.service.third.PictureService;
+import com.yixihan.template.service.user.RegisterService;
 import com.yixihan.template.vo.req.user.UserLoginReq;
-import com.yixihan.template.vo.req.user.UserLoginValidateReq;
+import com.yixihan.template.vo.req.user.UserRegisterReq;
 import com.yixihan.template.vo.resp.base.ApiResp;
 import com.yixihan.template.vo.resp.user.AuthVO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
-import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.web.bind.annotation.*;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
@@ -30,7 +29,7 @@ public class AuthController {
     private AuthService authService;
 
     @Resource
-    private PictureService pictureService;
+    private RegisterService registerService;
 
     @Operation(summary = "登录")
     @HasAnyPermission(allowAnonymousUser = true)
@@ -39,17 +38,27 @@ public class AuthController {
         return ApiResp.succ(authService.authentication(req));
     }
 
-    @Operation(summary = "获取验证码")
+    @Operation(summary = "注册 - 手机号注册")
     @HasAnyPermission(allowAnonymousUser = true)
-    @GetMapping(value = "/validate/code", produces = APPLICATION_JSON_VALUE)
-    public ApiResp<String> getLoginValidateCode(@RequestBody UserLoginValidateReq req) {
-        return ApiResp.succ(authService.getLoginValidateCode(req));
+    @PostMapping(value = "/register/mobile", produces = APPLICATION_JSON_VALUE)
+    public ApiResp<Void> registerByMobile(@RequestBody UserRegisterReq req) {
+        registerService.registerByMobile(req);
+        return ApiResp.succ();
     }
 
-    @Operation(summary = "获取验证码(图片)")
+    @Operation(summary = "注册 - 邮箱注册")
     @HasAnyPermission(allowAnonymousUser = true)
-    @GetMapping(value = "/validate/picture", produces = APPLICATION_JSON_VALUE)
-    public void getValidatePicture(@RequestParam("uuid") String uuid, HttpServletResponse response) {
-        pictureService.generateValidatePicture(uuid, response);
+    @PostMapping(value = "/register/email", produces = APPLICATION_JSON_VALUE)
+    public ApiResp<Void> registerByEmail(@RequestBody UserRegisterReq req) {
+        registerService.registerByEmail(req);
+        return ApiResp.succ();
+    }
+
+    @Operation(summary = "注册 - 密码注册")
+    @HasAnyPermission(allowAnonymousUser = true)
+    @PostMapping(value = "/register/password", produces = APPLICATION_JSON_VALUE)
+    public ApiResp<Void> registerByPassword(@RequestBody UserRegisterReq req) {
+        registerService.registerByPassword(req);
+        return ApiResp.succ();
     }
 }

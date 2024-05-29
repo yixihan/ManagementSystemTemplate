@@ -12,11 +12,11 @@ import com.yixihan.template.service.third.CodeService;
 import com.yixihan.template.service.third.TemplateService;
 import com.yixihan.template.service.user.UserService;
 import com.yixihan.template.util.Assert;
+import com.yixihan.template.util.ValidationUtil;
 import com.yixihan.template.util.builder.EmailBuilder;
 import com.yixihan.template.util.builder.SmsBuilder;
 import com.yixihan.template.vo.req.third.CodeValidateReq;
-import com.yixihan.template.vo.req.third.EmailSendReq;
-import com.yixihan.template.vo.req.third.SmsSendReq;
+import com.yixihan.template.vo.req.third.SendCodeReq;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -92,7 +92,7 @@ public class CodeServiceImpl implements CodeService {
     }
 
     @Override
-    public String sendEmail(EmailSendReq req) {
+    public String sendEmail(SendCodeReq req) {
         CodeTypeEnums codeType = CodeTypeEnums.valueOf(req.getType());
         String keyName = getEmailRedisKey(req.getEmail(), codeType);
         String code = getCode(keyName);
@@ -157,7 +157,9 @@ public class CodeServiceImpl implements CodeService {
     }
 
     @Override
-    public String sendSms(SmsSendReq req) {
+    public String sendSms(SendCodeReq req) {
+        Assert.isTrue(ValidationUtil.validateMobile(req.getMobile()));
+
         CodeTypeEnums codeType = CodeTypeEnums.valueOf(req.getType());
         String keyName = getSmsRedisKey(req.getMobile(), codeType);
         String code = getCode(keyName);
