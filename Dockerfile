@@ -1,4 +1,4 @@
-FROM openjdk:8
+FROM openjdk:17
 EXPOSE 18080
 
 MAINTAINER yixihan<yixihan20010617@gmail.com>
