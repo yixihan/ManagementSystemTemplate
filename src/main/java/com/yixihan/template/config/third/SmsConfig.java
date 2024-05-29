@@ -1,5 +1,6 @@
 package com.yixihan.template.config.third;
 
+import com.yixihan.template.enums.SmsSourceEnums;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.InitializingBean;
@@ -19,6 +20,8 @@ import org.springframework.stereotype.Component;
 public class SmsConfig implements InitializingBean {
 
     private Boolean mock;
+
+    private SmsSourceEnums source;
 
     private String secretId;
 
@@ -41,6 +44,7 @@ public class SmsConfig implements InitializingBean {
     @Override
     public void afterPropertiesSet() {
         log.info("sms mock open: {}", mock);
+        log.info("sms source: {}", source.getDesc());
         log.info("sms secretId: {}", secretId);
         log.info("sms secretKey: {}", secretKey);
         log.info("sms smsSdkAppId: {}", smsSdkAppId);

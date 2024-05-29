@@ -1,4 +1,4 @@
-package com.yixihan.template.vo.req.third.sms;
+package com.yixihan.template.vo.req.third;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
@@ -24,5 +24,5 @@ public class SmsSendReq {
 
     @Schema(description = "发送内容")
     @NotBlank(message = "发送内容不能为空")
-    private String content;
+    private String type;
 }

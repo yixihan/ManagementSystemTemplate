@@ -1,16 +1,27 @@
 package com.yixihan.template.service.third.impl;
 
+import cn.hutool.core.util.RandomUtil;
 import com.yixihan.template.config.third.CodeConfig;
+import com.yixihan.template.config.third.EmailConfig;
+import com.yixihan.template.config.third.SmsConfig;
+import com.yixihan.template.enums.CodeTypeEnums;
 import com.yixihan.template.enums.ExceptionEnums;
+import com.yixihan.template.exception.AuthException;
 import com.yixihan.template.exception.CodeException;
 import com.yixihan.template.service.third.CodeService;
+import com.yixihan.template.service.third.TemplateService;
+import com.yixihan.template.service.user.UserService;
 import com.yixihan.template.util.Assert;
+import com.yixihan.template.util.builder.EmailBuilder;
+import com.yixihan.template.util.builder.SmsBuilder;
+import com.yixihan.template.vo.req.third.CodeValidateReq;
+import com.yixihan.template.vo.req.third.EmailSendReq;
+import com.yixihan.template.vo.req.third.SmsSendReq;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
-import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -27,11 +38,19 @@ public class CodeServiceImpl implements CodeService {
     private StringRedisTemplate stringRedisTemplate;
 
     @Resource
+    private UserService userService;
+
+    @Resource
+    private TemplateService templateService;
+
+    @Resource
     private CodeConfig codeConfig;
 
-    private final Random random = new Random();
+    @Resource
+    private EmailConfig emailConfig;
 
-    private static final char[] RANDOM_ARR = "1234567890".toCharArray();
+    @Resource
+    private SmsConfig smsConfig;
 
     public String getCode(String keyName) {
         // 生成验证码
@@ -60,14 +79,7 @@ public class CodeServiceImpl implements CodeService {
      * @return code
      */
     private synchronized String getRandomCode() {
-        int len = codeConfig.getLen();
-
-        StringBuilder sb = new StringBuilder(len);
-        for (int i = 0; i < len; i++) {
-            sb.append(RANDOM_ARR[random.nextInt(RANDOM_ARR.length)]);
-        }
-
-        return sb.toString();
+        return RandomUtil.randomNumbers(codeConfig.getLen());
     }
 
     @Override
@@ -77,5 +89,136 @@ public class CodeServiceImpl implements CodeService {
 
         // 设置过期时间
         stringRedisTemplate.expire(keyName, codeConfig.getTimeOut(), TimeUnit.MINUTES);
+    }
+
+    @Override
+    public String sendEmail(EmailSendReq req) {
+        CodeTypeEnums codeType = CodeTypeEnums.valueOf(req.getType());
+        String keyName = getEmailRedisKey(req.getEmail(), codeType);
+        String code = getCode(keyName);
+
+        if (emailConfig.getMock()) {
+            return code;
+        }
+
+        String emailContent = templateService.getTemplateContent(codeType.getType());
+
+        EmailBuilder.build()
+                .toEmail(req.getEmail())
+                .fromEmail(emailConfig.getSendEmail())
+                .subject(emailConfig.getTitle())
+                .content(emailContent, code, codeConfig.getTimeOut())
+                .send();
+
+        return null;
+    }
+
+    @Override
+    public void validateEmail(CodeValidateReq req) {
+        // 生成 keyName
+        CodeTypeEnums codeType = CodeTypeEnums.valueOf(req.getType());
+        String keyName = getEmailRedisKey(req.getEmail(), codeType);
+        validate(keyName, req.getCode());
+    }
+
+    /**
+     * 获取 email redis key
+     *
+     * @param email    email
+     * @param codeType 邮箱类型 {@link CodeTypeEnums}
+     * @return redis key
+     */
+    private String getEmailRedisKey(String email, CodeTypeEnums codeType) {
+        String key;
+        switch (codeType) {
+            case LOGIN:
+                key = String.format(emailConfig.getLoginKey(), email);
+                // 非注册类型, 校验用户是否存在
+                Assert.isTrue(userService.validateUserEmail(email), ExceptionEnums.ACCOUNT_NOT_FOUND);
+                break;
+            case REGISTER:
+                key = String.format(emailConfig.getRegisterKey(), email);
+                break;
+            case PASSWORD:
+                key = String.format(emailConfig.getUpdatePasswordKey(), email);
+                // 非注册类型, 校验用户是否存在
+                Assert.isTrue(userService.validateUserEmail(email), ExceptionEnums.ACCOUNT_NOT_FOUND);
+                break;
+            case COMMON:
+                key = String.format(emailConfig.getCommonKey(), email);
+                // 非注册类型, 校验用户是否存在
+                Assert.isTrue(userService.validateUserEmail(email), ExceptionEnums.ACCOUNT_NOT_FOUND);
+                break;
+            default:
+                throw new AuthException(ExceptionEnums.PARAMS_VALID_ERR);
+        }
+
+        return key;
+    }
+
+    @Override
+    public String sendSms(SmsSendReq req) {
+        CodeTypeEnums codeType = CodeTypeEnums.valueOf(req.getType());
+        String keyName = getSmsRedisKey(req.getMobile(), codeType);
+        String code = getCode(keyName);
+
+        if (smsConfig.getMock()) {
+            return code;
+        }
+
+        String templateId = templateService.getTemplateContent(codeType.getType());
+
+        SmsBuilder.build()
+                .toMobile(req.getMobile())
+                .templateId(templateId)
+                .source(smsConfig.getSource())
+                .addParams("code", code)
+                .addParams("timeOut", String.valueOf(codeConfig.getTimeOut()))
+                .send();
+
+        return null;
+    }
+
+    @Override
+    public void validateSms(CodeValidateReq req) {
+        // 生成 keyName
+        CodeTypeEnums codeType = CodeTypeEnums.valueOf(req.getType());
+        String keyName = getSmsRedisKey(req.getMobile(), codeType);
+        validate(keyName, req.getCode());
+    }
+
+    /**
+     * 获取 sms redis key
+     *
+     * @param mobile   mobile
+     * @param codeType 邮箱类型 {@link CodeTypeEnums}
+     * @return redis key
+     */
+    private String getSmsRedisKey(String mobile, CodeTypeEnums codeType) {
+        String key;
+        switch (codeType) {
+            case LOGIN:
+                key = String.format(emailConfig.getLoginKey(), mobile);
+                // 非注册类型, 校验用户是否存在
+                Assert.isTrue(userService.validateUserMobile(mobile), ExceptionEnums.ACCOUNT_NOT_FOUND);
+                break;
+            case REGISTER:
+                key = String.format(emailConfig.getRegisterKey(), mobile);
+                break;
+            case PASSWORD:
+                key = String.format(emailConfig.getUpdatePasswordKey(), mobile);
+                // 非注册类型, 校验用户是否存在
+                Assert.isTrue(userService.validateUserMobile(mobile), ExceptionEnums.ACCOUNT_NOT_FOUND);
+                break;
+            case COMMON:
+                key = String.format(emailConfig.getCommonKey(), mobile);
+                // 非注册类型, 校验用户是否存在
+                Assert.isTrue(userService.validateUserMobile(mobile), ExceptionEnums.ACCOUNT_NOT_FOUND);
+                break;
+            default:
+                throw new AuthException(ExceptionEnums.PARAMS_VALID_ERR);
+        }
+
+        return key;
     }
 }

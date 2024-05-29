@@ -130,6 +130,8 @@ third:
   sms:
     # mock
     mock: ${app.third.sms.mock}
+    # type
+    source: ${app.third.sms.source}
     # sms 接口配置
     secret-id: ${app.third.sms.secret-id}
     secret-key: ${app.third.sms.secret-key}

@@ -138,6 +138,11 @@
             <artifactId>core</artifactId>
             <version>3.5.1</version>
         </dependency>
+        <!-- email -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-mail</artifactId>
+        </dependency>
 
         <!-- lombok -->
         <dependency>

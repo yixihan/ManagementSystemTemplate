@@ -4,6 +4,8 @@ import com.yixihan.template.model.user.User;
 import com.yixihan.template.mapper.user.UserMapper;
 import com.yixihan.template.service.user.UserService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.yixihan.template.util.Assert;
+import com.yixihan.template.util.ValidationUtil;
 import org.springframework.stereotype.Service;
 
 /**
@@ -17,4 +19,21 @@ import org.springframework.stereotype.Service;
 @Service
 public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements UserService {
 
+    @Override
+    public boolean validateUserEmail(String email) {
+        Assert.notBlank(email);
+        Assert.isTrue(ValidationUtil.validateEmail(email));
+        return lambdaQuery()
+                .eq(User::getUserEmail, email)
+                .count() > 0;
+    }
+
+    @Override
+    public boolean validateUserMobile(String mobile) {
+        Assert.notBlank(mobile);
+        Assert.isTrue(ValidationUtil.validateMobile(mobile));
+        return lambdaQuery()
+                .eq(User::getUserMobile, mobile)
+                .count() > 0;
+    }
 }

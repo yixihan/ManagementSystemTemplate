@@ -31,6 +31,8 @@ app:
     sms:
       # mock
       mock: true
+      # type
+      source: ${app.third.sms.source}
       # sms 接口配置
       secret-id: secretId
       secret-key: secretKey
