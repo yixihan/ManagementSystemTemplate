@@ -207,13 +207,14 @@ public class Assert extends org.springframework.util.Assert {
      * 断言 enumName 是枚举值
      * 要使用, enumName 必须是枚举的 name
      *
-     * @param enumName 枚举值
+     * @param enumName  枚举值
      * @param enumClass 枚举类
      */
     public static <E extends Enum<E>> void isEnum(String enumName, Class<E> enumClass) {
         if (!enumClass.isEnum()) {
             throw new BaseException(StrUtil.format("class[{}] is not enum class", enumClass));
         }
+        notBlank(enumName);
 
         boolean flag = false;
         for (E e : enumClass.getEnumConstants()) {

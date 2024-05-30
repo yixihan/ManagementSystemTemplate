@@ -5,8 +5,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.io.Serial;
-import java.io.Serializable;
 import java.util.Date;
 
 /**
@@ -19,10 +17,7 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 @Schema(description = "任务执行参数")
-public class JobParam implements Serializable {
-
-    @Serial
-    private static final long serialVersionUID = -7970458253563174303L;
+public class JobParam {
 
     @Schema(description = "任务 code")
     private String jobCode;

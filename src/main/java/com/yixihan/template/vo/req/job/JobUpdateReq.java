@@ -6,9 +6,6 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
-import java.io.Serial;
-import java.io.Serializable;
-
 /**
  * 更新 job-req
  *
@@ -20,10 +17,7 @@ import java.io.Serializable;
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = false)
 @Schema(description = "更新 job-req")
-public class JobUpdateReq implements Serializable {
-
-    @Serial
-    private static final long serialVersionUID = -7816194529178166681L;
+public class JobUpdateReq {
 
     @Schema(description = "job id")
     private Long jobId;

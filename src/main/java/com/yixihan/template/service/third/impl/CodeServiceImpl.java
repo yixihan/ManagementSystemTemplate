@@ -116,6 +116,10 @@ public class CodeServiceImpl implements CodeService {
 
     @Override
     public void validateEmail(CodeValidateReq req) {
+        Assert.isTrue(ValidationUtil.validateEmail(req.getEmail()));
+        Assert.isEnum(req.getType(), CodeTypeEnums.class);
+        Assert.notBlank(req.getCode());
+
         // 生成 keyName
         CodeTypeEnums codeType = CodeTypeEnums.valueOf(req.getType());
         String keyName = getEmailRedisKey(req.getEmail(), codeType);
@@ -184,6 +188,10 @@ public class CodeServiceImpl implements CodeService {
 
     @Override
     public void validateSms(CodeValidateReq req) {
+        Assert.isTrue(ValidationUtil.validateMobile(req.getMobile()));
+        Assert.isEnum(req.getType(), CodeTypeEnums.class);
+        Assert.notBlank(req.getCode());
+
         // 生成 keyName
         CodeTypeEnums codeType = CodeTypeEnums.valueOf(req.getType());
         String keyName = getSmsRedisKey(req.getMobile(), codeType);

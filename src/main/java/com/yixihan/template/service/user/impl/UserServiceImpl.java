@@ -23,6 +23,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     public boolean validateUserEmail(String email) {
         Assert.notBlank(email);
         Assert.isTrue(ValidationUtil.validateEmail(email));
+
         return lambdaQuery()
                 .eq(User::getUserEmail, email)
                 .count() > 0;
@@ -32,6 +33,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     public boolean validateUserMobile(String mobile) {
         Assert.notBlank(mobile);
         Assert.isTrue(ValidationUtil.validateMobile(mobile));
+
         return lambdaQuery()
                 .eq(User::getUserMobile, mobile)
                 .count() > 0;
@@ -40,6 +42,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     @Override
     public User getUserByMobile(String mobile) {
         Assert.notBlank(mobile);
+        Assert.isTrue(ValidationUtil.validateMobile(mobile));
+
         return lambdaQuery()
                 .eq(User::getUserMobile, mobile)
                 .one();
@@ -48,6 +52,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     @Override
     public User getUserByEmail(String email) {
         Assert.notBlank(email);
+        Assert.isTrue(ValidationUtil.validateEmail(email));
+
         return lambdaQuery()
                 .eq(User::getUserEmail, email)
                 .one();
@@ -56,6 +62,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     @Override
     public User getUserByName(String userName) {
         Assert.notBlank(userName);
+
         return lambdaQuery()
                 .eq(User::getUserName, userName)
                 .one();

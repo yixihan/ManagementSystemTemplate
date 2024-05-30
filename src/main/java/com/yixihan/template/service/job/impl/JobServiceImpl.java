@@ -14,6 +14,7 @@ import com.yixihan.template.model.job.JobHis;
 import com.yixihan.template.service.job.JobHisService;
 import com.yixihan.template.service.job.JobService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.yixihan.template.util.Assert;
 import com.yixihan.template.util.PageUtil;
 import com.yixihan.template.util.Panic;
 import com.yixihan.template.vo.req.job.JobHisQueryReq;
@@ -47,9 +48,8 @@ public class JobServiceImpl extends ServiceImpl<JobMapper, Job> implements JobSe
 
     @Override
     public Job getJobByJobCode(String jobCode) {
-        if (StrUtil.isBlank(jobCode)) {
-            return null;
-        }
+        Assert.notBlank(jobCode);
+
         return lambdaQuery()
                 .eq(Job::getJobCode, jobCode)
                 .one();
@@ -84,6 +84,9 @@ public class JobServiceImpl extends ServiceImpl<JobMapper, Job> implements JobSe
 
     @Override
     public Job updateJob(JobUpdateReq req) {
+        Assert.notNull(req.getJobId());
+        Assert.isEnum(req.getJobStatus(), CommonStatusEnums.class);
+
         Job job = getById(req.getJobId());
 
         if (ObjUtil.isNull(job)) {
@@ -100,9 +103,8 @@ public class JobServiceImpl extends ServiceImpl<JobMapper, Job> implements JobSe
 
     @Override
     public PageVO<JobHis> queryJobHis(JobHisQueryReq req) {
-        if (ObjUtil.isNull(req.getJobId())) {
-            return PageUtil.emptyPage();
-        }
+        Assert.notNull(req.getJobId());
+
         Page<JobHis> page = jobHisService.lambdaQuery()
                 .eq(ObjUtil.isNotNull(req.getJobId()), JobHis::getJobId, req.getJobId())
                 .between(ObjUtil.isAllNotEmpty(req.getStartDate(), req.getEndDate()), JobHis::getStartDate, req.getStartDate(), req.getEndDate())

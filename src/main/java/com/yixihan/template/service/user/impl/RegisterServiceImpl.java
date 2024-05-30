@@ -70,12 +70,12 @@ public class RegisterServiceImpl implements RegisterService {
     private void registerByMobile(UserRegisterReq req) {
         Assert.isTrue(ValidationUtil.validateMobile(req.getMobile()));
         Assert.isFalse(userService.validateUserMobile(req.getMobile()));
+        Assert.notBlank(req.getCode());
 
-        CodeValidateReq validateReq = new CodeValidateReq();
-        validateReq.setMobile(req.getMobile());
-        validateReq.setType(CodeTypeEnums.REGISTER.getType());
-        validateReq.setCode(req.getCode());
-        codeService.validateSms(validateReq);
+        codeService.validateSms(CodeValidateReq.builder()
+                .mobile(req.getMobile())
+                .type(CodeTypeEnums.REGISTER.getType())
+                .code(req.getCode()).build());
 
         registerComm(req);
     }
@@ -88,12 +88,12 @@ public class RegisterServiceImpl implements RegisterService {
     private void registerByEmail(UserRegisterReq req) {
         Assert.isTrue(ValidationUtil.validateEmail(req.getEmail()));
         Assert.isFalse(userService.validateUserEmail(req.getEmail()));
+        Assert.notBlank(req.getCode());
 
-        CodeValidateReq validateReq = new CodeValidateReq();
-        validateReq.setMobile(req.getEmail());
-        validateReq.setType(CodeTypeEnums.REGISTER.getType());
-        validateReq.setCode(req.getCode());
-        codeService.validateEmail(validateReq);
+        codeService.validateEmail(CodeValidateReq.builder()
+                .email(req.getEmail())
+                .type(CodeTypeEnums.REGISTER.getType())
+                .code(req.getCode()).build());
 
         registerComm(req);
     }
@@ -104,8 +104,14 @@ public class RegisterServiceImpl implements RegisterService {
      * @param req 请求参数
      */
     private void registerByPassword(UserRegisterReq req) {
-        Assert.isTrue(ValidationUtil.validateEmail(req.getEmail()));
-        Assert.isTrue(ValidationUtil.validateUserName(req.getPassword()));
+        if (StrUtil.isNotBlank(req.getEmail())) {
+            Assert.isTrue(ValidationUtil.validateEmail(req.getEmail()));
+        }
+        if (StrUtil.isNotBlank(req.getMobile())) {
+            Assert.isTrue(ValidationUtil.validateMobile(req.getMobile()));
+        }
+        Assert.isTrue(ValidationUtil.validateUserName(req.getUserName()));
+        Assert.isTrue(ValidationUtil.validatePassword(req.getPassword()));
 
         registerComm(req);
     }
