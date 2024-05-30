@@ -3,6 +3,7 @@ package com.yixihan.template.service.third.impl;
 import cn.hutool.captcha.CaptchaUtil;
 import cn.hutool.captcha.CircleCaptcha;
 import cn.hutool.core.img.ImgUtil;
+import cn.hutool.core.util.StrUtil;
 import cn.hutool.extra.qrcode.QrCodeUtil;
 import cn.hutool.extra.qrcode.QrConfig;
 import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
@@ -44,7 +45,7 @@ public class PictureServiceImpl implements PictureService {
             String code = captcha.getCode();
 
             // 获取 redis key
-            String keyName = String.format(codeConfig.getCommonKey(), uuid);
+            String keyName = StrUtil.format(codeConfig.getCommonKey(), uuid);
 
             // 存入 redis
             codeService.addRedis(keyName, code);

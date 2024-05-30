@@ -38,6 +38,9 @@ public class UserLoginReq implements Serializable {
     @Schema(description = "用户密码")
     private String password;
 
+    @Schema(description = "图片验证码 uuid")
+    private String uuid;
+
     @Schema(description = "用户验证码")
     private String validateCode;
 }

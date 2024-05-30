@@ -2,6 +2,7 @@ package com.yixihan.template.util;
 
 import cn.hutool.core.util.StrUtil;
 import com.yixihan.template.enums.ExceptionEnums;
+import com.yixihan.template.exception.BaseException;
 import com.yixihan.template.exception.BizException;
 
 /**
@@ -200,5 +201,27 @@ public class Assert extends org.springframework.util.Assert {
      */
     public static void isBlank(String str) {
         isBlank(str, ExceptionEnums.PARAMS_VALID_ERR);
+    }
+
+    /**
+     * 断言 enumName 是枚举值
+     * 要使用, enumName 必须是枚举的 name
+     *
+     * @param enumName 枚举值
+     * @param enumClass 枚举类
+     */
+    public static <E extends Enum<E>> void isEnum(String enumName, Class<E> enumClass) {
+        if (!enumClass.isEnum()) {
+            throw new BaseException(StrUtil.format("class[{}] is not enum class", enumClass));
+        }
+
+        boolean flag = false;
+        for (E e : enumClass.getEnumConstants()) {
+            if (e.name().equals(enumName)) {
+                flag = true;
+                break;
+            }
+        }
+        isTrue(flag);
     }
 }

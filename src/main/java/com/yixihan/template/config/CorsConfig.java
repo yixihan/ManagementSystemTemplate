@@ -1,8 +1,11 @@
 package com.yixihan.template.config;
 
 
+import com.yixihan.template.controller.BaseController;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.method.HandlerTypePredicate;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.PathMatchConfigurer;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 /**
@@ -28,5 +31,10 @@ public class CorsConfig implements WebMvcConfigurer {
                 .allowCredentials(true)
                 // 设置预检请求的缓存时间(秒)
                 .maxAge(3600);
+    }
+
+    @Override
+    public void configurePathMatch(PathMatchConfigurer configurer) {
+        configurer.addPathPrefix("/open", HandlerTypePredicate.forBasePackageClass(BaseController.class));
     }
 }

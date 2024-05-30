@@ -26,4 +26,28 @@ public interface UserService extends IService<User> {
      * @param mobile 手机号
      */
     boolean validateUserMobile(String mobile);
+
+    /**
+     * 获取用户 - 通过手机号
+     *
+     * @param mobile 手机号
+     * @return {@link User}
+     */
+    User getUserByMobile(String mobile);
+
+    /**
+     * 获取用户 - 通过邮箱
+     *
+     * @param email 邮箱
+     * @return {@link User}
+     */
+    User getUserByEmail(String email);
+
+    /**
+     * 获取用户 - 通过用户名
+     *
+     * @param userName 用户名
+     * @return {@link User}
+     */
+    User getUserByName(String userName);
 }

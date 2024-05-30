@@ -1,6 +1,7 @@
 package com.yixihan.template.service.third.impl;
 
 import cn.hutool.core.util.RandomUtil;
+import cn.hutool.core.util.StrUtil;
 import com.yixihan.template.config.third.CodeConfig;
 import com.yixihan.template.config.third.EmailConfig;
 import com.yixihan.template.config.third.SmsConfig;
@@ -132,20 +133,20 @@ public class CodeServiceImpl implements CodeService {
         String key;
         switch (codeType) {
             case LOGIN:
-                key = String.format(emailConfig.getLoginKey(), email);
+                key = StrUtil.format(emailConfig.getLoginKey(), email);
                 // 非注册类型, 校验用户是否存在
                 Assert.isTrue(userService.validateUserEmail(email), ExceptionEnums.ACCOUNT_NOT_FOUND);
                 break;
             case REGISTER:
-                key = String.format(emailConfig.getRegisterKey(), email);
+                key = StrUtil.format(emailConfig.getRegisterKey(), email);
                 break;
             case PASSWORD:
-                key = String.format(emailConfig.getUpdatePasswordKey(), email);
+                key = StrUtil.format(emailConfig.getUpdatePasswordKey(), email);
                 // 非注册类型, 校验用户是否存在
                 Assert.isTrue(userService.validateUserEmail(email), ExceptionEnums.ACCOUNT_NOT_FOUND);
                 break;
             case COMMON:
-                key = String.format(emailConfig.getCommonKey(), email);
+                key = StrUtil.format(emailConfig.getCommonKey(), email);
                 // 非注册类型, 校验用户是否存在
                 Assert.isTrue(userService.validateUserEmail(email), ExceptionEnums.ACCOUNT_NOT_FOUND);
                 break;
@@ -200,20 +201,20 @@ public class CodeServiceImpl implements CodeService {
         String key;
         switch (codeType) {
             case LOGIN:
-                key = String.format(emailConfig.getLoginKey(), mobile);
+                key = StrUtil.format(emailConfig.getLoginKey(), mobile);
                 // 非注册类型, 校验用户是否存在
                 Assert.isTrue(userService.validateUserMobile(mobile), ExceptionEnums.ACCOUNT_NOT_FOUND);
                 break;
             case REGISTER:
-                key = String.format(emailConfig.getRegisterKey(), mobile);
+                key = StrUtil.format(emailConfig.getRegisterKey(), mobile);
                 break;
             case PASSWORD:
-                key = String.format(emailConfig.getUpdatePasswordKey(), mobile);
+                key = StrUtil.format(emailConfig.getUpdatePasswordKey(), mobile);
                 // 非注册类型, 校验用户是否存在
                 Assert.isTrue(userService.validateUserMobile(mobile), ExceptionEnums.ACCOUNT_NOT_FOUND);
                 break;
             case COMMON:
-                key = String.format(emailConfig.getCommonKey(), mobile);
+                key = StrUtil.format(emailConfig.getCommonKey(), mobile);
                 // 非注册类型, 校验用户是否存在
                 Assert.isTrue(userService.validateUserMobile(mobile), ExceptionEnums.ACCOUNT_NOT_FOUND);
                 break;

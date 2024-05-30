@@ -16,9 +16,9 @@ public class AuthConstant {
 
     public static final String AUTH_KEY = "authCache";
 
-    public static final String RESOURCE_KEY = "resourceCache";
-
     public static final String USER_ID = "userId";
+
+    public static final String USER_NAME = "userName";
 
 
 }

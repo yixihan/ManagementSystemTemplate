@@ -36,4 +36,28 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
                 .eq(User::getUserMobile, mobile)
                 .count() > 0;
     }
+
+    @Override
+    public User getUserByMobile(String mobile) {
+        Assert.notBlank(mobile);
+        return lambdaQuery()
+                .eq(User::getUserMobile, mobile)
+                .one();
+    }
+
+    @Override
+    public User getUserByEmail(String email) {
+        Assert.notBlank(email);
+        return lambdaQuery()
+                .eq(User::getUserEmail, email)
+                .one();
+    }
+
+    @Override
+    public User getUserByName(String userName) {
+        Assert.notBlank(userName);
+        return lambdaQuery()
+                .eq(User::getUserName, userName)
+                .one();
+    }
 }

@@ -3,21 +3,22 @@ package com.yixihan.template.auth.service;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.ArrayUtil;
 import cn.hutool.core.util.ObjUtil;
+import cn.hutool.core.util.StrUtil;
 import com.yixihan.template.auth.annotation.HasAnyPermission;
 import com.yixihan.template.auth.cache.AuthCacheService;
 import com.yixihan.template.auth.constant.AuthConstant;
 import com.yixihan.template.auth.enums.PermissionEnums;
+import com.yixihan.template.enums.CodeTypeEnums;
 import com.yixihan.template.enums.ExceptionEnums;
 import com.yixihan.template.enums.LoginTypeEnums;
 import com.yixihan.template.exception.AuthException;
 import com.yixihan.template.exception.BizException;
 import com.yixihan.template.model.user.User;
+import com.yixihan.template.service.third.CodeService;
 import com.yixihan.template.service.user.RoleService;
 import com.yixihan.template.service.user.UserService;
-import com.yixihan.template.util.AppContext;
-import com.yixihan.template.util.Assert;
-import com.yixihan.template.util.JwtUtil;
-import com.yixihan.template.util.Panic;
+import com.yixihan.template.util.*;
+import com.yixihan.template.vo.req.third.CodeValidateReq;
 import com.yixihan.template.vo.req.user.UserLoginReq;
 import com.yixihan.template.vo.resp.user.AuthVO;
 import com.yixihan.template.vo.resp.user.PermissionVO;
@@ -33,7 +34,9 @@ import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.stereotype.Service;
 
 import java.lang.reflect.Method;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -55,6 +58,9 @@ public class AuthService {
 
     @Resource
     private AuthCacheService cacheService;
+
+    @Resource
+    private CodeService codeService;
 
     @Resource
     private HttpServletRequest request;
@@ -92,31 +98,118 @@ public class AuthService {
         return authInfo;
     }
 
-    public AuthVO authentication(UserLoginReq req) {
+    /**
+     * 登录
+     * @param req 请求参数
+     * @return {@link AuthVO}
+     */
+    public AuthVO login(UserLoginReq req) {
+        Assert.isEnum(req.getLoginType(), LoginTypeEnums.class);
         switch (LoginTypeEnums.valueOf(req.getLoginType())) {
             case EMAIL -> {
-                return authenticationByEmail(req);
+                return loginByEmail(req);
             }
             case MOBILE -> {
-                return authenticationByMobile(req);
+                return loginByMobile(req);
             }
             case PASSWORD -> {
-                return authenticationByPwd(req);
+                return loginByPwd(req);
             }
             default -> throw new AuthException("unknown login in type");
         }
     }
 
-    private AuthVO authenticationByPwd(UserLoginReq req) {
-        return new AuthVO();
+    /**
+     * 登录 - 通过密码登录
+     * @param req 请求参数
+     * @return {@link AuthVO}
+     */
+    private AuthVO loginByPwd(UserLoginReq req) {
+        // 参数校验
+        Assert.isTrue(ValidationUtil.validateUserName(req.getUserName()));
+        Assert.isTrue(ValidationUtil.validatePassword(req.getPassword()));
+        Assert.notBlank(req.getValidateCode());
+
+        // 验证码校验
+        codeService.validate(req.getUuid(), req.getValidateCode());
+
+        // 获取用户信息
+        User user = userService.getUserByName(req.getUserName());
+
+        return login(req, user);
     }
 
-    private AuthVO authenticationByEmail(UserLoginReq req) {
-        return new AuthVO();
+    /**
+     * 登录 - 通过邮箱登录
+     * @param req 请求参数
+     * @return {@link AuthVO}
+     */
+    private AuthVO loginByEmail(UserLoginReq req) {
+        // 参数校验
+        Assert.isTrue(ValidationUtil.validateEmail(req.getUserEmail()));
+        Assert.notBlank(req.getValidateCode());
+
+        // 验证码校验
+        codeService.validateEmail(CodeValidateReq.builder()
+                .type(CodeTypeEnums.LOGIN.getType())
+                .email(req.getUserEmail())
+                .code(req.getValidateCode())
+                .build());
+
+        // 获取用户信息
+        User user = userService.getUserByEmail(req.getUserEmail());
+
+        return login(req, user);
     }
 
-    private AuthVO authenticationByMobile(UserLoginReq req) {
-        return new AuthVO();
+    /**
+     * 登录 - 通过手机号登录
+     * @param req 请求参数
+     * @return {@link AuthVO}
+     */
+    private AuthVO loginByMobile(UserLoginReq req) {
+        // 参数校验
+        Assert.isTrue(ValidationUtil.validateMobile(req.getUserMobile()));
+        Assert.notBlank(req.getValidateCode());
+
+        // 验证码校验
+        codeService.validateSms(CodeValidateReq.builder()
+                .type(CodeTypeEnums.LOGIN.getType())
+                .mobile(req.getUserMobile())
+                .code(req.getValidateCode())
+                .build());
+
+        // 获取用户信息
+        User user = userService.getUserByMobile(req.getUserMobile());
+
+        return login(req, user);
+    }
+
+    /**
+     * 登录 - 通用方法
+     * @param req 请求参数
+     * @param user user
+     * @return {@link AuthVO}
+     */
+    private AuthVO login(UserLoginReq req, User user) {
+        Assert.notNull(user, new AuthException(ExceptionEnums.ACCOUNT_NOT_FOUND));
+
+        if (LoginTypeEnums.PASSWORD.getType().equals(req.getLoginType())) {
+            // 密码方式登录, 加密用户输入的密码
+            String md5Password = MD5Util.md5(req.getPassword(), user.getUserSalt());
+
+            // 将加密后的密码存入 user
+            user.setUserPassword(md5Password);
+        }
+
+        // 生成 JwtToken
+        Map<String, Object> payload = new HashMap<>(16);
+        payload.put(AuthConstant.USER_ID, user.getId());
+        payload.put(AuthConstant.USER_NAME, user.getUserName());
+        String token = JwtUtil.createJwtToken(user.getUserPassword(), payload);
+
+        // 登录
+        return authentication(token);
     }
 
     /**
@@ -149,6 +242,9 @@ public class AuthService {
             // 3. 校验 token 是否正确
             // 获取并注入HttpServletRequest
             String token = request.getHeader(AuthConstant.JWT_TOKEN);
+            if (StrUtil.isBlank(token)) {
+                Panic.noAuth(ExceptionEnums.TOKEN_EXPIRED);
+            }
             if (ObjUtil.isNull(authentication(token))) {
                 Panic.noAuth(ExceptionEnums.TOKEN_ERR);
             }
