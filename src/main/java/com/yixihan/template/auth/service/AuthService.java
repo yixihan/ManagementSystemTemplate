@@ -10,7 +10,7 @@ import com.yixihan.template.auth.constant.AuthConstant;
 import com.yixihan.template.auth.enums.PermissionEnums;
 import com.yixihan.template.enums.CodeTypeEnums;
 import com.yixihan.template.enums.ExceptionEnums;
-import com.yixihan.template.enums.LoginTypeEnums;
+import com.yixihan.template.enums.AuthTypeEnums;
 import com.yixihan.template.exception.AuthException;
 import com.yixihan.template.exception.BizException;
 import com.yixihan.template.model.user.User;
@@ -84,11 +84,7 @@ public class AuthService {
         // 获取用户角色信息
         List<RoleVO> userRoleList = roleService.getUserRoleList(userId);
 
-        AuthVO authInfo = new AuthVO(
-                BeanUtil.toBean(user, UserVO.class),
-                userRoleList,
-                token
-        );
+        AuthVO authInfo = new AuthVO(BeanUtil.toBean(user, UserVO.class), userRoleList, token);
 
         // 存储进 redis
         cacheService.put(token, authInfo);
@@ -100,12 +96,13 @@ public class AuthService {
 
     /**
      * 登录
+     *
      * @param req 请求参数
      * @return {@link AuthVO}
      */
     public AuthVO login(UserLoginReq req) {
-        Assert.isEnum(req.getLoginType(), LoginTypeEnums.class);
-        switch (LoginTypeEnums.valueOf(req.getLoginType())) {
+        Assert.isEnum(req.getLoginType(), AuthTypeEnums.class);
+        switch (AuthTypeEnums.valueOf(req.getLoginType())) {
             case EMAIL -> {
                 return loginByEmail(req);
             }
@@ -115,12 +112,16 @@ public class AuthService {
             case PASSWORD -> {
                 return loginByPwd(req);
             }
+            case TOKEN -> {
+                return loginByToken(req);
+            }
             default -> throw new AuthException("unknown login in type");
         }
     }
 
     /**
      * 登录 - 通过密码登录
+     *
      * @param req 请求参数
      * @return {@link AuthVO}
      */
@@ -136,11 +137,12 @@ public class AuthService {
         // 获取用户信息
         User user = userService.getUserByName(req.getUserName());
 
-        return login(req, user);
+        return loginComm(req, user);
     }
 
     /**
      * 登录 - 通过邮箱登录
+     *
      * @param req 请求参数
      * @return {@link AuthVO}
      */
@@ -150,20 +152,17 @@ public class AuthService {
         Assert.notBlank(req.getValidateCode());
 
         // 验证码校验
-        codeService.validateEmail(CodeValidateReq.builder()
-                .type(CodeTypeEnums.LOGIN.getType())
-                .email(req.getUserEmail())
-                .code(req.getValidateCode())
-                .build());
+        codeService.validateEmail(CodeValidateReq.builder().type(CodeTypeEnums.LOGIN.getType()).email(req.getUserEmail()).code(req.getValidateCode()).build());
 
         // 获取用户信息
         User user = userService.getUserByEmail(req.getUserEmail());
 
-        return login(req, user);
+        return loginComm(req, user);
     }
 
     /**
      * 登录 - 通过手机号登录
+     *
      * @param req 请求参数
      * @return {@link AuthVO}
      */
@@ -173,28 +172,42 @@ public class AuthService {
         Assert.notBlank(req.getValidateCode());
 
         // 验证码校验
-        codeService.validateSms(CodeValidateReq.builder()
-                .type(CodeTypeEnums.LOGIN.getType())
-                .mobile(req.getUserMobile())
-                .code(req.getValidateCode())
-                .build());
+        codeService.validateSms(CodeValidateReq.builder().type(CodeTypeEnums.LOGIN.getType()).mobile(req.getUserMobile()).code(req.getValidateCode()).build());
 
         // 获取用户信息
         User user = userService.getUserByMobile(req.getUserMobile());
 
-        return login(req, user);
+        return loginComm(req, user);
+    }
+
+    /**
+     * 登录 - 通过token登录
+     *
+     * @param req 请求参数
+     * @return {@link AuthVO}
+     */
+    private AuthVO loginByToken(UserLoginReq req) {
+        // 参数校验
+        Assert.notBlank(req.getToken());
+
+        // 获取用户信息
+        Long userId = JwtUtil.analysis(req.getToken(), AuthConstant.USER_ID, Long.class);
+        User user = userService.getById(userId);
+
+        return loginComm(req, user);
     }
 
     /**
      * 登录 - 通用方法
-     * @param req 请求参数
+     *
+     * @param req  请求参数
      * @param user user
      * @return {@link AuthVO}
      */
-    private AuthVO login(UserLoginReq req, User user) {
+    private AuthVO loginComm(UserLoginReq req, User user) {
         Assert.notNull(user, new AuthException(ExceptionEnums.ACCOUNT_NOT_FOUND));
 
-        if (LoginTypeEnums.PASSWORD.getType().equals(req.getLoginType())) {
+        if (AuthTypeEnums.PASSWORD.getType().equals(req.getLoginType())) {
             // 密码方式登录, 加密用户输入的密码
             String md5Password = MD5Util.md5(req.getPassword(), user.getUserSalt());
 
@@ -280,10 +293,7 @@ public class AuthService {
         }
 
         // 从数据库中取出用户的 permission code, 对比是否全有
-        Set<String> userPermissionSet = roleService.getUserPermissionList(AppContext.getInstance().getLoginUser().getUser().getId())
-                .stream()
-                .map(PermissionVO::getPermissionCode)
-                .collect(Collectors.toSet());
+        Set<String> userPermissionSet = roleService.getUserPermissionList(AppContext.getInstance().getLoginUser().getUser().getId()).stream().map(PermissionVO::getPermissionCode).collect(Collectors.toSet());
 
         for (PermissionEnums permissionCode : permissionCodes) {
             if (!userPermissionSet.contains(permissionCode.getCode())) {

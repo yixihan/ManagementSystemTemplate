@@ -39,24 +39,10 @@ public class AuthController extends BaseController {
         return run(authService::login, req);
     }
 
-    @Operation(summary = "注册 - 手机号注册")
+    @Operation(summary = "注册")
     @HasAnyPermission(allowAnonymousUser = true)
-    @PostMapping(value = "/register/mobile", produces = APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/register", produces = APPLICATION_JSON_VALUE)
     public ApiResp<Void> registerByMobile(@RequestBody UserRegisterReq req) {
-        return run(registerService::registerByMobile, req);
-    }
-
-    @Operation(summary = "注册 - 邮箱注册")
-    @HasAnyPermission(allowAnonymousUser = true)
-    @PostMapping(value = "/register/email", produces = APPLICATION_JSON_VALUE)
-    public ApiResp<Void> registerByEmail(@RequestBody UserRegisterReq req) {
-        return run(registerService::registerByEmail, req);
-    }
-
-    @Operation(summary = "注册 - 密码注册")
-    @HasAnyPermission(allowAnonymousUser = true)
-    @PostMapping(value = "/register/password", produces = APPLICATION_JSON_VALUE)
-    public ApiResp<Void> registerByPassword(@RequestBody UserRegisterReq req) {
-        return run(registerService::registerByPassword, req);
+        return run(registerService::register, req);
     }
 }

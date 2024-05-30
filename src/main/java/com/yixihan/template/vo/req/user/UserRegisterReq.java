@@ -38,4 +38,7 @@ public class UserRegisterReq {
     @Schema(description = "验证码")
     @NotBlank
     private String code;
+
+    @Schema(description = "注册方式")
+    private String type;
 }

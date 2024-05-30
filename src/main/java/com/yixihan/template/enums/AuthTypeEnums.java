@@ -11,7 +11,7 @@ import lombok.Getter;
  */
 @Getter
 @AllArgsConstructor
-public enum LoginTypeEnums {
+public enum AuthTypeEnums {
 
     PASSWORD("PASSWORD", "密码登录"),
     EMAIL("EMAIL", "邮件登录"),

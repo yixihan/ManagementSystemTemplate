@@ -5,6 +5,7 @@ import cn.hutool.core.util.StrUtil;
 import com.yixihan.template.constant.NumberConstant;
 import com.yixihan.template.enums.CodeTypeEnums;
 import com.yixihan.template.enums.ExceptionEnums;
+import com.yixihan.template.enums.AuthTypeEnums;
 import com.yixihan.template.exception.BizException;
 import com.yixihan.template.model.user.User;
 import com.yixihan.template.model.user.UserRole;
@@ -45,9 +46,28 @@ public class RegisterServiceImpl implements RegisterService {
     @Resource
     private CodeService codeService;
 
-    @Override
+    /**
+     * 注册用户
+     *
+     * @param req 请求参数
+     */
     @Transactional(rollbackFor = BizException.class)
-    public void registerByMobile(UserRegisterReq req) {
+    public void register(UserRegisterReq req) {
+        Assert.isEnum(req.getType(), AuthTypeEnums.class);
+        switch (AuthTypeEnums.valueOf(req.getType())) {
+            case PASSWORD -> registerByPassword(req);
+            case MOBILE -> registerByMobile(req);
+            case EMAIL -> registerByEmail(req);
+            default -> throw new BizException(ExceptionEnums.PARAMS_VALID_ERR);
+        }
+    }
+
+    /**
+     * 注册用户 - 通过手机号
+     *
+     * @param req 请求参数
+     */
+    private void registerByMobile(UserRegisterReq req) {
         Assert.isTrue(ValidationUtil.validateMobile(req.getMobile()));
         Assert.isFalse(userService.validateUserMobile(req.getMobile()));
 
@@ -57,12 +77,15 @@ public class RegisterServiceImpl implements RegisterService {
         validateReq.setCode(req.getCode());
         codeService.validateSms(validateReq);
 
-        register(req);
+        registerComm(req);
     }
 
-    @Override
-    @Transactional(rollbackFor = BizException.class)
-    public void registerByEmail(UserRegisterReq req) {
+    /**
+     * 注册用户 - 通过邮箱
+     *
+     * @param req 请求参数
+     */
+    private void registerByEmail(UserRegisterReq req) {
         Assert.isTrue(ValidationUtil.validateEmail(req.getEmail()));
         Assert.isFalse(userService.validateUserEmail(req.getEmail()));
 
@@ -72,26 +95,27 @@ public class RegisterServiceImpl implements RegisterService {
         validateReq.setCode(req.getCode());
         codeService.validateEmail(validateReq);
 
-        register(req);
-    }
-
-    @Override
-    @Transactional(rollbackFor = BizException.class)
-    public void registerByPassword(UserRegisterReq req) {
-        Assert.isTrue(ValidationUtil.validateEmail(req.getEmail()));
-        Assert.isTrue(ValidationUtil.validateUserName(req.getPassword()));
-
-        register(req);
+        registerComm(req);
     }
 
     /**
-     * 注册用户-通用方法
+     * 注册用户 - 通过密码
      *
-     * @param req 注册请求参数
-     * @throws BizException 注册失败则抛出
+     * @param req 请求参数
      */
-    @Transactional(rollbackFor = BizException.class)
-    protected void register(UserRegisterReq req) throws BizException {
+    private void registerByPassword(UserRegisterReq req) {
+        Assert.isTrue(ValidationUtil.validateEmail(req.getEmail()));
+        Assert.isTrue(ValidationUtil.validateUserName(req.getPassword()));
+
+        registerComm(req);
+    }
+
+    /**
+     * 注册用户 - 通用方法
+     *
+     * @param req 请求参数
+     */
+    private void registerComm(UserRegisterReq req) {
         User user = new User();
         user.setUserName(req.getUserName());
         user.setUserMobile(req.getMobile());
@@ -99,7 +123,7 @@ public class RegisterServiceImpl implements RegisterService {
 
         // 生成用户名+密码
         if (StrUtil.isBlank(user.getUserName())) {
-            user.setUserName(StrUtil.format("用户_{}", RandomUtil.randomNumbers(NumberConstant.NUM_5)));
+            user.setUserName(StrUtil.format("用户_{}", RandomUtil.randomNumbers(NumberConstant.NUM_10)));
         }
         user.setUserPassword(RandomUtil.randomString(NumberConstant.NUM_10));
 
