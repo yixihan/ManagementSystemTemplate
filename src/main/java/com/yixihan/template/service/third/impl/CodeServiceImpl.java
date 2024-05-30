@@ -53,6 +53,7 @@ public class CodeServiceImpl implements CodeService {
     @Resource
     private SmsConfig smsConfig;
 
+    @Override
     public String getCode(String keyName) {
         // 生成验证码
         String code = getRandomCode();
@@ -94,6 +95,9 @@ public class CodeServiceImpl implements CodeService {
 
     @Override
     public String sendEmail(SendCodeReq req) {
+        Assert.isTrue(ValidationUtil.validateEmail(req.getEmail()));
+        Assert.isEnum(req.getType(), CodeTypeEnums.class);
+
         CodeTypeEnums codeType = CodeTypeEnums.valueOf(req.getType());
         String keyName = getEmailRedisKey(req.getEmail(), codeType);
         String code = getCode(keyName);
@@ -164,6 +168,7 @@ public class CodeServiceImpl implements CodeService {
     @Override
     public String sendSms(SendCodeReq req) {
         Assert.isTrue(ValidationUtil.validateMobile(req.getMobile()));
+        Assert.isEnum(req.getType(), CodeTypeEnums.class);
 
         CodeTypeEnums codeType = CodeTypeEnums.valueOf(req.getType());
         String keyName = getSmsRedisKey(req.getMobile(), codeType);

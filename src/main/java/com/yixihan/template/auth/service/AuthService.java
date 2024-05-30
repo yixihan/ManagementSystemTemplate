@@ -20,6 +20,7 @@ import com.yixihan.template.service.user.UserService;
 import com.yixihan.template.util.*;
 import com.yixihan.template.vo.req.third.CodeValidateReq;
 import com.yixihan.template.vo.req.user.UserLoginReq;
+import com.yixihan.template.vo.req.user.UserResetPwdReq;
 import com.yixihan.template.vo.resp.user.AuthVO;
 import com.yixihan.template.vo.resp.user.PermissionVO;
 import com.yixihan.template.vo.resp.user.RoleVO;
@@ -32,6 +33,7 @@ import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.Signature;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.lang.reflect.Method;
 import java.util.HashMap;
@@ -100,6 +102,7 @@ public class AuthService {
      * @param req 请求参数
      * @return {@link AuthVO}
      */
+    @Transactional(readOnly = true)
     public AuthVO login(UserLoginReq req) {
         Assert.isEnum(req.getLoginType(), AuthTypeEnums.class);
         switch (AuthTypeEnums.valueOf(req.getLoginType())) {
@@ -152,7 +155,11 @@ public class AuthService {
         Assert.notBlank(req.getValidateCode());
 
         // 验证码校验
-        codeService.validateEmail(CodeValidateReq.builder().type(CodeTypeEnums.LOGIN.getType()).email(req.getUserEmail()).code(req.getValidateCode()).build());
+        codeService.validateEmail(CodeValidateReq.builder()
+                .type(CodeTypeEnums.LOGIN.getType())
+                .email(req.getUserEmail())
+                .code(req.getValidateCode())
+                .build());
 
         // 获取用户信息
         User user = userService.getUserByEmail(req.getUserEmail());
@@ -172,7 +179,11 @@ public class AuthService {
         Assert.notBlank(req.getValidateCode());
 
         // 验证码校验
-        codeService.validateSms(CodeValidateReq.builder().type(CodeTypeEnums.LOGIN.getType()).mobile(req.getUserMobile()).code(req.getValidateCode()).build());
+        codeService.validateSms(CodeValidateReq.builder()
+                .type(CodeTypeEnums.LOGIN.getType())
+                .mobile(req.getUserMobile())
+                .code(req.getValidateCode())
+                .build());
 
         // 获取用户信息
         User user = userService.getUserByMobile(req.getUserMobile());
@@ -223,6 +234,88 @@ public class AuthService {
 
         // 登录
         return authentication(token);
+    }
+
+    /**
+     * 重置密码
+     *
+     * @param req 请求参数
+     */
+    @Transactional(rollbackFor = BizException.class)
+    public void resetPassword(UserResetPwdReq req) {
+        Assert.isEnum(req.getType(), AuthTypeEnums.class);
+        switch (AuthTypeEnums.valueOf(req.getType())) {
+            case EMAIL -> resetPwdByEmail(req);
+            case MOBILE -> resetPwdByMobile(req);
+            default -> throw new AuthException(ExceptionEnums.PARAMS_VALID_ERR);
+        }
+    }
+
+    /**
+     * 重置密码 - 通过手机号
+     *
+     * @param req 请求参数
+     */
+    private void resetPwdByMobile(UserResetPwdReq req) {
+        // 参数校验
+        Assert.isTrue(ValidationUtil.validateMobile(req.getMobile()));
+        Assert.notBlank(req.getCode());
+
+        // 验证码校验
+        codeService.validateSms(CodeValidateReq.builder()
+                .type(CodeTypeEnums.PASSWORD.getType())
+                .mobile(req.getMobile())
+                .code(req.getCode())
+                .build());
+
+        // 获取用户信息
+        User user = userService.getUserByMobile(req.getMobile());
+
+        resetPwdComm(req, user);
+    }
+
+    /**
+     * 重置密码 - 通过邮箱
+     *
+     * @param req 请求参数
+     */
+    private void resetPwdByEmail(UserResetPwdReq req) {
+        // 参数校验
+        Assert.isTrue(ValidationUtil.validateEmail(req.getEmail()));
+        Assert.notBlank(req.getCode());
+
+        // 验证码校验
+        codeService.validateSms(CodeValidateReq.builder()
+                .type(CodeTypeEnums.PASSWORD.getType())
+                .email(req.getEmail())
+                .code(req.getCode())
+                .build());
+
+        // 获取用户信息
+        User user = userService.getUserByEmail(req.getEmail());
+
+        resetPwdComm(req, user);
+    }
+
+    /**
+     * 重置密码 - 通用方法
+     *
+     * @param req  请求参数
+     * @param user user
+     */
+    private void resetPwdComm(UserResetPwdReq req, User user) {
+        // 校验旧密码
+        String oldPwdMd = MD5Util.md5(req.getOldPassword(), user.getUserSalt());
+        Assert.isTrue(StrUtil.equals(oldPwdMd, user.getUserPassword()), ExceptionEnums.PASSWORD_ERR);
+
+        // 加密新密码
+        String salt = MD5Util.generateSalt();
+        String newPwd = MD5Util.md5(req.getNewPassword(), salt);
+        user.setUserPassword(newPwd);
+        user.setUserSalt(salt);
+
+        // 保存
+        userService.save(user);
     }
 
     /**

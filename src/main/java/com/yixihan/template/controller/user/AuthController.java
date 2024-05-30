@@ -6,6 +6,7 @@ import com.yixihan.template.controller.BaseController;
 import com.yixihan.template.service.user.RegisterService;
 import com.yixihan.template.vo.req.user.UserLoginReq;
 import com.yixihan.template.vo.req.user.UserRegisterReq;
+import com.yixihan.template.vo.req.user.UserResetPwdReq;
 import com.yixihan.template.vo.resp.base.ApiResp;
 import com.yixihan.template.vo.resp.user.AuthVO;
 import io.swagger.v3.oas.annotations.Operation;
@@ -44,5 +45,12 @@ public class AuthController extends BaseController {
     @PostMapping(value = "/register", produces = APPLICATION_JSON_VALUE)
     public ApiResp<Void> registerByMobile(@RequestBody UserRegisterReq req) {
         return run(registerService::register, req);
+    }
+
+    @Operation(summary = "重置密码")
+    @HasAnyPermission(allowAnonymousUser = true)
+    @PostMapping(value = "/reset/password", produces = APPLICATION_JSON_VALUE)
+    public ApiResp<Void> resetPassword(@RequestBody UserResetPwdReq req) {
+        return run(authService::resetPassword, req);
     }
 }
