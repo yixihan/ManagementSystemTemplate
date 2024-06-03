@@ -13,15 +13,15 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum JobStatusEnums {
 
-    PENDING("Pending", "准备中"),
-    RUNNING("Running", "执行中"),
-    FAILED("Failed", "失败"),
-    SUCCESS("Success", "成功"),
+    PENDING("PENDING", "准备中"),
+    RUNNING("RUNNING", "执行中"),
+    FAILED("FAILED", "失败"),
+    SUCCESS("SUCCESS", "成功"),
 
     ;
 
 
-    private final String uiStatus;
+    private final String status;
 
     private final String desc;
 }

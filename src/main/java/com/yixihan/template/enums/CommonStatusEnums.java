@@ -13,12 +13,12 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum CommonStatusEnums {
 
-    VALID("valid", "有效的"),
-    INVALID("invalid", "无效的"),
+    VALID("VALID", "有效的"),
+    INVALID("INVALID", "无效的"),
 
     ;
 
-    private final String uiCode;
+    private final String code;
 
     private final String desc;
     }

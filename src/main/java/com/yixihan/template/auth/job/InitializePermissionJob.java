@@ -19,14 +19,14 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 /**
- * 初始化 permissionCode 任务
+ * 初始化权限 任务
  *
  * @author yixihan
  * @date 2024-05-23 14:37
  */
 @Slf4j
 @Component
-public class InitializePermissionCodeJob implements JobInterface {
+public class InitializePermissionJob implements JobInterface {
 
     @Resource
     private PermissionService service;
