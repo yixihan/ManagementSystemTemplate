@@ -1,4 +1,4 @@
-package com.yixihan.template.config;
+package com.yixihan.template.config.cache;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.PropertyAccessor;

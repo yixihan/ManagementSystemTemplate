@@ -23,9 +23,9 @@ app:
       # 验证码生成长度
       len: 5
       # 验证码有效期, 单位: min
-      time-out: 10
+      timeout: 10
       # 验证码 Redis key
-      common-key: picture::common::{}
+      common-key: picture:common:{}
 
     # 短信配置
     sms:
@@ -40,10 +40,10 @@ app:
       sign-name: signName
 
       # redis key
-      login-key: sms::login::{}
-      register-key: sms::register::{}
-      update-password-key: sms::password::{}
-      common-key: sms::common::{}
+      login-key: sms:login:{}
+      register-key: sms:register:{}
+      update-password-key: sms:password:{}
+      common-key: sms:common:{}
 
     # 邮件配置
     email:
@@ -53,10 +53,10 @@ app:
       send-email: 1@1.com
 
       # redis key
-      login-key: email::login::{}
-      register-key: email::register::{}
-      update-password-key: email::password::{}
-      common-key: email::common::{}
+      login-key: email:login:{}
+      register-key: email:register:{}
+      update-password-key: email:password:{}
+      common-key: email:common:{}
 
     # 对象存储配置
     os:

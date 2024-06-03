@@ -304,10 +304,6 @@ public class AuthService {
      * @param user user
      */
     private void resetPwdComm(UserResetPwdReq req, User user) {
-        // 校验旧密码
-        String oldPwdMd = MD5Util.md5(req.getOldPassword(), user.getUserSalt());
-        Assert.isTrue(StrUtil.equals(oldPwdMd, user.getUserPassword()), ExceptionEnums.PASSWORD_ERR);
-
         // 加密新密码
         String salt = MD5Util.generateSalt();
         String newPwd = MD5Util.md5(req.getNewPassword(), salt);
@@ -315,7 +311,7 @@ public class AuthService {
         user.setUserSalt(salt);
 
         // 保存
-        userService.save(user);
+        userService.updateById(user);
     }
 
     /**

@@ -20,14 +20,14 @@ public class CodeConfig implements InitializingBean {
 
     private Integer len;
 
-    private Long timeOut;
+    private Long timeout;
 
     private String commonKey;
 
     @Override
     public void afterPropertiesSet() {
         log.info("code len: {}", len);
-        log.info("code timeOut: {} min", timeOut);
+        log.info("code timeout: {} min", timeout);
         log.info("code redis commonKey: {}", commonKey);
     }
 }

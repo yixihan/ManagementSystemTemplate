@@ -90,7 +90,7 @@ public class CodeServiceImpl implements CodeService {
         stringRedisTemplate.opsForValue().set(keyName, code);
 
         // 设置过期时间
-        stringRedisTemplate.expire(keyName, codeConfig.getTimeOut(), TimeUnit.MINUTES);
+        stringRedisTemplate.expire(keyName, codeConfig.getTimeout(), TimeUnit.MINUTES);
     }
 
     @Override
@@ -112,7 +112,7 @@ public class CodeServiceImpl implements CodeService {
                 .toEmail(req.getEmail())
                 .fromEmail(emailConfig.getSendEmail())
                 .subject(emailConfig.getTitle())
-                .content(emailContent, code, codeConfig.getTimeOut())
+                .content(emailContent, code, codeConfig.getTimeout())
                 .send();
 
         return null;
@@ -185,7 +185,7 @@ public class CodeServiceImpl implements CodeService {
                 .templateId(templateId)
                 .source(smsConfig.getSource())
                 .addParams("code", code)
-                .addParams("timeOut", String.valueOf(codeConfig.getTimeOut()))
+                .addParams("timeout", String.valueOf(codeConfig.getTimeout()))
                 .send();
 
         return null;

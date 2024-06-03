@@ -52,27 +52,6 @@ spring:
       database: ${app.redis.db}
       password: ${app.redis.password}
 
-# auth config
-security:
-  # controller package
-  controller-package: com.yixihan.template.controller
-  # whitelist list
-  ignore-url-list:
-    # swagger
-    - "/swagger-ui/**"
-    - "/webjars/**"
-    - "/swagger-resources/**"
-    - "/v3/**"
-    - "/actuator/**"
-    # static resource
-    - "/**/*.js"
-    - "/**/*.css"
-    - "/**/*.html"
-    - "/**/*.json"
-    # auth
-    - "/auth/**"
-    # register
-    - "/open/user/register/user"
 
 
 # mybatis-plus config
@@ -115,6 +94,39 @@ springdoc:
     path: /swagger-ui
     operations-sorter: method
 
+# cache 配置
+cache:
+  # 默认有效期
+  timeout: 10
+  # cache Name List
+  cache-names:
+    - name: userRoleCache
+      timeout: 1
+    - name: rolePermissionCache
+
+# auth config
+security:
+  # controller package
+  controller-package: com.yixihan.template.controller
+  # whitelist list
+  ignore-url-list:
+    # swagger
+    - "/swagger-ui/**"
+    - "/webjars/**"
+    - "/swagger-resources/**"
+    - "/v3/**"
+    - "/actuator/**"
+    # static resource
+    - "/**/*.js"
+    - "/**/*.css"
+    - "/**/*.html"
+    - "/**/*.json"
+    # auth
+    - "/auth/**"
+    # register
+    - "/open/user/register/user"
+
+
 # 第三方服务配置
 third:
   # 验证码配置
@@ -122,7 +134,7 @@ third:
     # 验证码生成长度
     len: ${app.third.code.len}
     # 验证码有效期, 单位: min
-    time-out: ${app.third.code.time-out}
+    timeout: ${app.third.code.timeout}
     # 验证码 Redis key
     common-key: ${app.third.code.common-key}
   

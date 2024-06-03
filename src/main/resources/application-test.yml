@@ -23,7 +23,7 @@ app:
       # 验证码生成长度
       len: 5
       # 验证码有效期, 单位: min
-      time-out: 10
+      timeout: 10
       # 验证码 Redis key
       common-key: picture::common::{}
 
