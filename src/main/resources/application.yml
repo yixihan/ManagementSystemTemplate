@@ -145,9 +145,13 @@ third:
     # type
     source: ${app.third.sms.source}
     # sms 接口配置
+    # access key id
     secret-id: ${app.third.sms.secret-id}
+    # access key secret
     secret-key: ${app.third.sms.secret-key}
+    # 腾讯云 SmsSdkAppid
     sms-sdk-app-id: ${app.third.sms.sms-sdk-app-id}
+    # 签名内容
     sign-name: ${app.third.sms.sign-name}
 
     # redis key
