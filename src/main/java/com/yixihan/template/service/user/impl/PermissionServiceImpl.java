@@ -7,6 +7,7 @@ import com.yixihan.template.model.user.Permission;
 import com.yixihan.template.mapper.user.PermissionMapper;
 import com.yixihan.template.service.user.PermissionService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.yixihan.template.util.Panic;
 import com.yixihan.template.vo.resp.user.PermissionVO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.Cacheable;
@@ -16,6 +17,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -54,5 +57,38 @@ public class PermissionServiceImpl extends ServiceImpl<PermissionMapper, Permiss
         }
         List<Permission> permissionList = baseMapper.getRolePermission(roleId);
         return BeanUtil.copyToList(permissionList, PermissionVO.class);
+    }
+
+    @Override
+    public void validatePermissionId(List<Long> permissionIdList) {
+        if (CollUtil.isEmpty(permissionIdList)) {
+            return;
+        }
+        Long count = lambdaQuery()
+                .in(Permission::getId, permissionIdList)
+                .count();
+
+        if (count == permissionIdList.size()) {
+            return;
+        }
+
+        Set<Long> permissionIdSet = lambdaQuery()
+                .select(Permission::getId)
+                .in(Permission::getId, permissionIdList)
+                .list()
+                .stream()
+                .map(Permission::getId)
+                .collect(Collectors.toSet());
+
+        for (Long id : permissionIdList) {
+            if (!permissionIdSet.contains(id)) {
+                Panic.noSuchEntry(id);
+            }
+        }
+    }
+
+    @Override
+    public void validatePermsiionId(Long permissionId) {
+        validatePermissionId(CollUtil.toList(permissionId));
     }
 }

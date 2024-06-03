@@ -32,4 +32,18 @@ public interface PermissionService extends IService<Permission> {
      * @return {@code List<PermissionVO>}
      */
     List<PermissionVO> getRolePermission(Long roleId);
+
+    /**
+     * 校验权限 id 是否存在
+     *
+     * @param permissionIdList 权限 id
+     */
+    void validatePermissionId(List<Long> permissionIdList);
+
+    /**
+     * 校验权限 id 是否存在
+     *
+     * @param permissionId 权限 id
+     */
+    void validatePermsiionId(Long permissionId);
 }

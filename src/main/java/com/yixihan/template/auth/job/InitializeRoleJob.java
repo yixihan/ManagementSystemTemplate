@@ -1,13 +1,11 @@
 package com.yixihan.template.auth.job;
 
-import cn.hutool.core.util.ObjUtil;
 import com.yixihan.template.auth.enums.RoleEnums;
 import com.yixihan.template.enums.CommonStatusEnums;
 import com.yixihan.template.job.JobInterface;
 import com.yixihan.template.job.JobRunner;
 import com.yixihan.template.model.user.Permission;
 import com.yixihan.template.model.user.Role;
-import com.yixihan.template.model.user.RolePermission;
 import com.yixihan.template.service.user.PermissionService;
 import com.yixihan.template.service.user.RolePermissionService;
 import com.yixihan.template.service.user.RoleService;
@@ -97,16 +95,7 @@ public class InitializeRoleJob implements JobInterface {
         if (adminFlag) {
             List<Long> permissionIdList = permissionService.list().stream().map(Permission::getId).toList();
             Role admin = newRoleList.stream().filter(o -> RoleEnums.ADMIN.getRole().equals(o.getRoleCode())).findFirst().orElse(new Role());
-            if (ObjUtil.isNotNull(admin.getId())) {
-                List<RolePermission> rolePermissionList = new ArrayList<>(permissionIdList.size());
-                permissionIdList.forEach(permissionId -> {
-                    RolePermission rolePermission = new RolePermission();
-                    rolePermission.setPermissionId(permissionId);
-                    rolePermission.setRoleId(admin.getId());
-                    rolePermissionList.add(rolePermission);
-                });
-                rolePermissionService.saveBatch(rolePermissionList);
-            }
+            rolePermissionService.saveRolePermission(admin, permissionIdList);
         }
     }
 
