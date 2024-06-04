@@ -14,7 +14,9 @@ public class AuthConstant {
 
     public static final String JWT_TOKEN = "token";
 
-    public static final String AUTH_KEY = "authCache";
+    public static final String AUTH_LOGIN_KEY = "authCache:Login";
+
+    public static final String AUTH_LOGOUT_KEY = "authCache:Logout:{}";
 
     public static final String USER_ID = "userId";
 

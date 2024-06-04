@@ -24,7 +24,7 @@ public class JwtUtil {
     /**
      * JwtToken 的过期时间, 30 天
      */
-    private static final int EXPIRE_TIME = 30;
+    public static final int EXPIRE_TIME = 30;
 
     private JwtUtil() {
 

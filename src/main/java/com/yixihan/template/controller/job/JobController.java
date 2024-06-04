@@ -37,7 +37,7 @@ public class JobController extends BaseController {
     private JobService jobService;
 
     @Operation(summary = "分页查询 job")
-    @HasAnyPermission(allowAnonymousUser = true)
+    @HasAnyPermission(permissionCode = {PermissionEnums.ADMIN_JOB_LIST})
     @PostMapping(value = "/query", produces = APPLICATION_JSON_VALUE)
     public ApiResp<PageVO<Job>> queryJob(@RequestBody JobQueryReq req) {
         return run(jobService::queryJob, req);

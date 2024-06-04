@@ -53,4 +53,11 @@ public class AuthController extends BaseController {
     public ApiResp<Void> resetPassword(@RequestBody UserResetPwdReq req) {
         return run(authService::resetPassword, req);
     }
+
+    @Operation(summary = "登出")
+    @HasAnyPermission(allowAnonymousUser = true)
+    @PutMapping(value = "/logout", produces = APPLICATION_JSON_VALUE)
+    public ApiResp<Void> logout() {
+        return run(authService::logout);
+    }
 }

@@ -2,6 +2,9 @@ package com.yixihan.template.service.user;
 
 import com.yixihan.template.model.user.Permission;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.yixihan.template.vo.req.user.PermissionModifyReq;
+import com.yixihan.template.vo.req.user.PermissionQueryReq;
+import com.yixihan.template.vo.resp.base.PageVO;
 import com.yixihan.template.vo.resp.user.PermissionVO;
 
 import java.util.List;
@@ -45,5 +48,29 @@ public interface PermissionService extends IService<Permission> {
      *
      * @param permissionId 权限 id
      */
-    void validatePermsiionId(Long permissionId);
+    void validatePermissionId(Long permissionId);
+
+    /**
+     * 修改权限
+     *
+     * @param req 请求参数
+     * @return {@link PermissionVO}
+     */
+    PermissionVO modifyPermission(PermissionModifyReq req);
+
+    /**
+     * 查询权限
+     *
+     * @param req 请求参数
+     * @return {@link PermissionVO}
+     */
+    PageVO<PermissionVO> queryPermission(PermissionQueryReq req);
+
+    /**
+     * 权限详情
+     *
+     * @param permissionId 权限 id
+     * @return {@link PermissionVO}
+     */
+    PermissionVO permissionDetail(Long permissionId);
 }

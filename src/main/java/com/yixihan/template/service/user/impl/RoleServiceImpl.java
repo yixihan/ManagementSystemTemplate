@@ -71,7 +71,7 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements Ro
         Map<Long, List<PermissionVO>> permissionMap = permissionService.getRolePermission(roleIdList);
 
         for (RoleVO role : roleList) {
-            role.setPermissionList(permissionMap.get(role.getId()));
+            role.setPermissionList(permissionMap.get(role.getRoleId()));
         }
 
         return roleList;
@@ -146,6 +146,16 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements Ro
     public void removeRole(Long roleId) {
         Assert.notNull(roleId);
 
+        // 删除用户角色表该角色的数据
+        List<Long> userRoleIdList = userRoleService.lambdaQuery()
+                .select(UserRole::getId)
+                .eq(UserRole::getRoleId, roleId)
+                .list()
+                .stream()
+                .map(UserRole::getId)
+                .toList();
+
+        userRoleService.removeBatchByIds(userRoleIdList);
         removeById(roleId);
     }
 
@@ -194,7 +204,7 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements Ro
 
     private RoleVO roleToRoleVO(Role role) {
         RoleVO vo = new RoleVO();
-        vo.setId(role.getId());
+        vo.setRoleId(role.getId());
         vo.setRoleCode(role.getRoleCode());
         vo.setRoleName(role.getRoleName());
         vo.setStatus(role.getStatus());

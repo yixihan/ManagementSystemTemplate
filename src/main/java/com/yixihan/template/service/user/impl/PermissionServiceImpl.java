@@ -3,11 +3,19 @@ package com.yixihan.template.service.user.impl;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.ObjUtil;
+import cn.hutool.core.util.StrUtil;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.yixihan.template.enums.CommonStatusEnums;
 import com.yixihan.template.model.user.Permission;
 import com.yixihan.template.mapper.user.PermissionMapper;
 import com.yixihan.template.service.user.PermissionService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.yixihan.template.util.Assert;
+import com.yixihan.template.util.PageUtil;
 import com.yixihan.template.util.Panic;
+import com.yixihan.template.vo.req.user.PermissionModifyReq;
+import com.yixihan.template.vo.req.user.PermissionQueryReq;
+import com.yixihan.template.vo.resp.base.PageVO;
 import com.yixihan.template.vo.resp.user.PermissionVO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.Cacheable;
@@ -88,7 +96,57 @@ public class PermissionServiceImpl extends ServiceImpl<PermissionMapper, Permiss
     }
 
     @Override
-    public void validatePermsiionId(Long permissionId) {
+    public void validatePermissionId(Long permissionId) {
         validatePermissionId(CollUtil.toList(permissionId));
+    }
+
+    @Override
+    public PermissionVO modifyPermission(PermissionModifyReq req) {
+        Assert.notNull(req);
+        Assert.notNull(req.getPermissionId());
+        Assert.isEnum(req.getStatus(), CommonStatusEnums.class);
+
+        Permission permission = getById(req.getPermissionId());
+        if (ObjUtil.isNull(permission)) {
+            Panic.noSuchEntry(req.getPermissionId());
+        }
+
+        permission.setStatus(req.getStatus());
+        updateById(permission);
+
+        return permissionToVO(permission);
+    }
+
+    @Override
+    public PageVO<PermissionVO> queryPermission(PermissionQueryReq req) {
+        Assert.notNull(req);
+
+        Page<Permission> page = lambdaQuery()
+                .eq(StrUtil.isNotBlank(req.getPermissionCode()), Permission::getPermissionCode, req.getPermissionCode())
+                .eq(StrUtil.isNotBlank(req.getPermissionName()), Permission::getPermissionName, req.getPermissionName())
+                .in(CollUtil.isNotEmpty(req.getStatus()), Permission::getStatus, req.getStatus())
+                .page(PageUtil.toPage(req));
+
+        return PageUtil.pageToPageVO(page, this::permissionToVO);
+    }
+
+    @Override
+    public PermissionVO permissionDetail(Long permissionId) {
+        Assert.notNull(permissionId);
+
+        Permission permission = getById(permissionId);
+        if (ObjUtil.isNull(permission)) {
+            Panic.noSuchEntry(permissionId);
+        }
+        return permissionToVO(permission);
+    }
+
+    private PermissionVO permissionToVO(Permission permission) {
+        PermissionVO vo = new PermissionVO();
+        vo.setPermissionId(permission.getId());
+        vo.setPermissionCode(permission.getPermissionCode());
+        vo.setPermissionName(permission.getPermissionName());
+        vo.setStatus(permission.getStatus());
+        return vo;
     }
 }

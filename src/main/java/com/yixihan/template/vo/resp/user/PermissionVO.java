@@ -24,7 +24,7 @@ public class PermissionVO implements Serializable {
     private static final long serialVersionUID = -2819886465768388087L;
 
     @Schema(description = "权限 id")
-    private Long id;
+    private Long permissionId;
 
     @Schema(description = "权限 code")
     private String permissionCode;

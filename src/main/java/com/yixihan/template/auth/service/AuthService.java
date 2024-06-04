@@ -36,10 +36,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.lang.reflect.Method;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -205,7 +202,13 @@ public class AuthService {
         Long userId = JwtUtil.analysis(req.getToken(), AuthConstant.USER_ID, Long.class);
         User user = userService.getById(userId);
 
-        return loginComm(req, user);
+        AuthVO authVO = loginComm(req, user);
+
+        // 新 token 生成后, 注销老 token
+        if (ObjUtil.isNotNull(authVO)) {
+            cacheService.putLogoutToken(req.getToken());
+        }
+        return authVO;
     }
 
     /**
@@ -314,6 +317,41 @@ public class AuthService {
         userService.updateById(user);
     }
 
+    public void logout() {
+        String token = request.getHeader(AuthConstant.JWT_TOKEN);
+        cacheService.del(token);
+
+        cacheService.putLogoutToken(token);
+    }
+
+    /**
+     * 获取登录用户信息
+     *
+     * @return {@link AuthVO}
+     */
+    public AuthVO getLoginUser() {
+        AuthVO loginUser = AppContext.getInstance().getLoginUser();
+        if (ObjUtil.isNotNull(loginUser)) {
+            return loginUser;
+        }
+
+        String token = request.getHeader(AuthConstant.JWT_TOKEN);
+        return cacheService.get(token);
+    }
+
+    public List<RoleVO> getLoginUserRole() {
+        return getLoginUser().getRoleList();
+    }
+
+    public List<PermissionVO> getLoginUserPermission() {
+        Set<PermissionVO> permissionSet = new HashSet<>();
+        for (RoleVO role : getLoginUserRole()) {
+            permissionSet.addAll(role.getPermissionList());
+        }
+
+        return new ArrayList<>(permissionSet);
+    }
+
     /**
      * <p>权限认证处理</p>
      * <li>1. 接口无 {@link HasAnyPermission} 注解: 接口无权限控制, 所有人皆可访问</li>
@@ -345,6 +383,9 @@ public class AuthService {
             // 获取并注入HttpServletRequest
             String token = request.getHeader(AuthConstant.JWT_TOKEN);
             if (StrUtil.isBlank(token)) {
+                Panic.noAuth(ExceptionEnums.TOKEN_EXPIRED);
+            }
+            if (cacheService.containsLogoutToken(token)) {
                 Panic.noAuth(ExceptionEnums.TOKEN_EXPIRED);
             }
             if (ObjUtil.isNull(authentication(token))) {
