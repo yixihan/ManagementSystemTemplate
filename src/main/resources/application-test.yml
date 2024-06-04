@@ -66,3 +66,7 @@ app:
       endpoint: endpoint
       bucket-name: bucket-name
       host: host
+      # SM.MS 配置
+      token: token
+      username: username
+      password: password

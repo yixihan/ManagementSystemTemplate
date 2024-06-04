@@ -159,7 +159,22 @@ create table if not exists `template`
     unique index type_idx (`template_code`) using btree
 ) comment '模板表';
 
-insert into role(role_code, role_name, status, create_date, update_date)
-values
-    ('USER', 'user', 'VALID', now(), now()),
-    ('ADMIN', 'admin', 'VALID', now(), now());
+drop table if exists `object_storage`;
+create table if not exists `object_storage`
+(
+    `id`           bigint(18) unsigned auto_increment comment 'os id',
+    `os_data`      mediumtext       null comment 'os data',
+    `os_name`      varchar(50)      not null comment 'os name',
+    `os_path`      varchar(255)     null comment 'os 存储路径',
+    `content_type` varchar(50)      null comment 'content type',
+    `encoding`     varchar(50)      null comment '编码',
+    `os_type`      varchar(50)      not null comment '存储类型',
+    `metadata`     text             not null comment 'os 元数据',
+    `create_date`  datetime         not null comment '创建时间',
+    `update_date`  datetime         not null comment '更新时间',
+    `version`      int(11) unsigned not null default 1 comment '乐观锁',
+    `del_flag`     tinyint(1)       not null default 0 comment '逻辑删除',
+
+    primary key (`id`),
+    index os_name_idx (`os_name`) using btree
+) comment '对象存储表';

@@ -60,9 +60,13 @@ app:
 
     # 对象存储配置
     os:
-      type: type
+      type: LOCAL
       access-key: access-key
       secret-key: secret-key
       endpoint: endpoint
       bucket-name: bucket-name
       host: host
+      # SM.MS 配置
+      token: token
+      username: username
+      password: password

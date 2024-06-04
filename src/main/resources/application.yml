@@ -183,3 +183,7 @@ third:
     endpoint: ${app.third.os.endpoint}
     bucket-name: ${app.third.os.bucket-name}
     host: ${app.third.os.host}
+    # SM.MS 配置 配置了 token 就不用配置 username 和 password
+    token: ${app.third.os.token}
+    username: ${app.third.os.username}
+    password: ${app.third.os.password}
