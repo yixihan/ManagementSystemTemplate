@@ -18,6 +18,8 @@ import java.util.Map;
 
 /**
  * SM.MS 图床 builder
+ * <br/>
+ * 文档: <a href="https://doc.sm.ms/#api-_">SM.MS API Doc</a>
  *
  * @author yixihan
  * @date 2024-06-04 14:15
@@ -26,12 +28,24 @@ import java.util.Map;
 @SuppressWarnings("unused")
 public class SmmsBuilder {
 
+    /**
+     * 文件
+     */
     private MultipartFile file;
 
+    /**
+     * 访问 token
+     */
     private String token;
 
+    /**
+     * 文件 hash 值 删除时用
+     */
     private String hash;
 
+    /**
+     * 页数 查询时用
+     */
     private Long page;
 
     private Boolean uploadFlag = false;
@@ -51,6 +65,9 @@ public class SmmsBuilder {
     private static final String DELETE_URL = "/delete/{}";
 
     private static final String HISTORY_URL = "/upload_history";
+
+    private SmmsBuilder() {
+    }
 
     public SmmsBuilder build() {
         SmmsBuilder builder = new SmmsBuilder();
