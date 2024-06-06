@@ -155,6 +155,9 @@ public class OssBuilder {
         return this;
     }
 
+    /**
+     * 设置上床目录
+     */
     public OssBuilder dir(String dir) {
         this.dir = dir;
         return this;
