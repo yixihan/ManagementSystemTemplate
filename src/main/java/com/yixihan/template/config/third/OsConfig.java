@@ -37,20 +37,37 @@ public class OsConfig implements InitializingBean {
 
     private String password;
 
+    private String localPath;
+
 
     @Override
     public void afterPropertiesSet() {
         log.info("os type: {}", type.getDesc());
-        log.info("os accessKey: {}", accessKey);
-        log.info("os secretKey: {}", secretKey);
-        log.info("os endpoint: {}", endpoint);
-        log.info("os bucketName: {}", bucketName);
-        log.info("os host: {}", host);
-
         if (smms()) {
             log.info("SM.MS username: {}", username);
             log.info("SM.MS password: {}", password);
             log.info("SM.MS token: {}", token);
+        } else if (local()) {
+            log.info("Local file dir: {}", localPath);
+        } else if (kodo()) {
+            log.info("Kodo accessKey: {}", accessKey);
+            log.info("Kodo secretKey: {}", secretKey);
+            log.info("Kodo host: {}", host);
+            log.info("Kodo bucketName: {}", bucketName);
+        } else if (oss()) {
+            log.info("OSS accessKey: {}", accessKey);
+            log.info("OSS secretKey: {}", secretKey);
+            log.info("OSS endpoint: {}", endpoint);
+            log.info("OSS host: {}", host);
+            log.info("OSS bucketName: {}", bucketName);
+        } else if (cos()) {
+            log.info("COS accessKey: {}", accessKey);
+            log.info("COS secretKey: {}", secretKey);
+            log.info("COS endpoint: {}", endpoint);
+            log.info("COS host: {}", host);
+            log.info("COS bucketName: {}", bucketName);
+        } else if (db()) {
+            // do nothing
         }
     }
 

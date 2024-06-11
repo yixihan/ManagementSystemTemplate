@@ -83,7 +83,7 @@ public class OssBuilder {
     private OssBuilder() {
     }
 
-    public OssBuilder build() {
+    public static OssBuilder build() {
         return new OssBuilder();
     }
 

@@ -2,8 +2,7 @@ package com.yixihan.template.model.third;
 
 import java.io.Serial;
 
-import java.io.Serializable;
-
+import com.yixihan.template.model.BaseModel;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -23,7 +22,7 @@ import lombok.experimental.Accessors;
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
 @Schema(description = "对象存储表")
-public class ObjectStorage implements Serializable {
+public class ObjectStorage extends BaseModel {
 
     @Serial
     private static final long serialVersionUID = 4663702293704660825L;
@@ -46,6 +45,9 @@ public class ObjectStorage implements Serializable {
     @Schema(description = "存储类型")
     private String osType;
 
+    @Schema(description = "元数据")
+    private String metadata;
+
     public static final String ID = "id";
 
     public static final String OS_DATA = "os_data";
@@ -57,6 +59,8 @@ public class ObjectStorage implements Serializable {
     public static final String ENCODING = "encoding";
 
     public static final String OS_TYPE = "os_type";
+
+    public static final String METADATA = "metadata";
 
     public static final String CREATE_DATE = "create_date";
 

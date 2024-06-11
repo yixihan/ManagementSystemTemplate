@@ -70,3 +70,5 @@ app:
       token: token
       username: username
       password: password
+      # local 配置
+      local-path: /tmp

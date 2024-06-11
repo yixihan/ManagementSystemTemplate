@@ -187,3 +187,5 @@ third:
     token: ${app.third.os.token}
     username: ${app.third.os.username}
     password: ${app.third.os.password}
+    # Local path
+    local-path: ${app.third.os.local-path}

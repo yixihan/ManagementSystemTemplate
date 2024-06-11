@@ -1,5 +1,6 @@
 package com.yixihan.template.util.builder;
 
+import cn.hutool.core.lang.UUID;
 import cn.hutool.core.util.ObjUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.extra.spring.SpringUtil;
@@ -14,15 +15,11 @@ import com.qiniu.util.StringMap;
 import com.yixihan.template.config.third.OsConfig;
 import com.yixihan.template.exception.InvalidParameterException;
 import com.yixihan.template.util.Assert;
+import com.yixihan.template.util.FileUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
 
 /**
  * 七牛云 Kodo 图床 builder
@@ -241,7 +238,11 @@ public class KodoBuilder {
      */
     private String getToken() {
         if (StrUtil.isBlank(key)) {
-            key = file.getName();
+            if (ObjUtil.isNotNull(file)) {
+                key = file.getName();
+            } else {
+                key = UUID.fastUUID().toString();
+            }
         }
         Assert.notBlank(key);
         OsConfig config = SpringUtil.getBean(OsConfig.class);
@@ -255,6 +256,7 @@ public class KodoBuilder {
      * @return json data
      */
     private String upload() {
+        Assert.notNull(file);
         if (StrUtil.isBlank(key)) {
             key = file.getName();
         }
@@ -285,13 +287,11 @@ public class KodoBuilder {
         String data = StrUtil.EMPTY_JSON;
 
         try {
-            Response response = uploadManager.put(convertToFile(file), key, upToken);
+            Response response = uploadManager.put(FileUtil.convertToFile(file), key, upToken);
             //解析上传成功的结果
             data = response.bodyString();
         } catch (QiniuException ex) {
             log.error("七牛云 Kodo 上传文件错误: {}", ex.getMessage());
-        } catch (IOException e) {
-            log.error("MultipartFile to file error: {}", e.getMessage());
         }
 
         return data;
@@ -337,25 +337,6 @@ public class KodoBuilder {
         }
 
         return data;
-    }
-
-    /**
-     * 将 MultipartFile 转换为 File 对象
-     *
-     * @param multipartFile MultipartFile实例
-     * @return 转换后的File对象
-     * @throws IOException 文件操作异常
-     */
-    private static File convertToFile(MultipartFile multipartFile) throws IOException {
-        // 生成一个临时文件路径
-        Path tempFilePath = Files.createTempFile("temp", multipartFile.getOriginalFilename());
-
-        // 将multipartFile内容写入临时文件
-        try (FileOutputStream fos = new FileOutputStream(tempFilePath.toFile())) {
-            fos.write(multipartFile.getBytes());
-        }
-
-        return tempFilePath.toFile();
     }
 
     /**

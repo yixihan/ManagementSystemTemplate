@@ -69,7 +69,7 @@ public class SmmsBuilder {
     private SmmsBuilder() {
     }
 
-    public SmmsBuilder build() {
+    public static SmmsBuilder build() {
         SmmsBuilder builder = new SmmsBuilder();
         builder.initToken();
         return builder;
