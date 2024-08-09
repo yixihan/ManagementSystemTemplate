@@ -99,8 +99,8 @@ create table if not exists `role_permission`
     index permission_id_idx (`permission_id`) using btree
 ) comment '角色-权限关联表';
 
-drop table if exists job;
-create table if not exists job
+drop table if exists job_info;
+create table if not exists job_info
 (
     `id`                bigint(18) unsigned auto_increment comment '任务 id',
     `job_code`          varchar(100)     not null comment '任务 code',

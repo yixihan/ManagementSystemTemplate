@@ -1,9 +1,9 @@
 package com.yixihan.template.handler;
 
 import cn.hutool.core.util.StrUtil;
-import com.yixihan.template.exception.BaseException;
-import com.yixihan.template.exception.BizException;
-import com.yixihan.template.util.EnvUtil;
+import com.yixihan.template.common.exception.BaseException;
+import com.yixihan.template.common.exception.BizException;
+import com.yixihan.template.common.util.EnvUtil;
 import com.yixihan.template.vo.resp.base.ApiResp;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.ControllerAdvice;

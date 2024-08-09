@@ -1,7 +1,7 @@
 package com.yixihan.template.auth.job;
 
 import com.yixihan.template.auth.enums.RoleEnums;
-import com.yixihan.template.enums.CommonStatusEnums;
+import com.yixihan.template.common.enums.CommonStatusEnums;
 import com.yixihan.template.job.JobInterface;
 import com.yixihan.template.job.JobRunner;
 import com.yixihan.template.model.user.Permission;

@@ -4,8 +4,8 @@ import com.yixihan.template.model.user.User;
 import com.yixihan.template.mapper.user.UserMapper;
 import com.yixihan.template.service.user.UserService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.yixihan.template.util.Assert;
-import com.yixihan.template.util.ValidationUtil;
+import com.yixihan.template.common.util.Assert;
+import com.yixihan.template.common.util.ValidationUtil;
 import org.springframework.stereotype.Service;
 
 /**

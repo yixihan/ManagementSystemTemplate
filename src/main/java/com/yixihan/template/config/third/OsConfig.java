@@ -1,6 +1,6 @@
 package com.yixihan.template.config.third;
 
-import com.yixihan.template.enums.OsTypeEnums;
+import com.yixihan.template.common.enums.OsTypeEnums;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.InitializingBean;

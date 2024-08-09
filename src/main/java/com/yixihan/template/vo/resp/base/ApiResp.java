@@ -1,7 +1,7 @@
 package com.yixihan.template.vo.resp.base;
 
-import com.yixihan.template.enums.ExceptionEnums;
-import com.yixihan.template.exception.BaseException;
+import com.yixihan.template.common.enums.ExceptionEnums;
+import com.yixihan.template.common.exception.BaseException;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Data;

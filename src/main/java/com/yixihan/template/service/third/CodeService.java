@@ -1,6 +1,6 @@
 package com.yixihan.template.service.third;
 
-import com.yixihan.template.enums.CodeTypeEnums;
+import com.yixihan.template.common.enums.CodeTypeEnums;
 import com.yixihan.template.vo.req.third.CodeValidateReq;
 import com.yixihan.template.vo.req.third.SendCodeReq;
 

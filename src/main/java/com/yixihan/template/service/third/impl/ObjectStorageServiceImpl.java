@@ -4,14 +4,14 @@ import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.yixihan.template.config.third.OsConfig;
-import com.yixihan.template.exception.BizException;
+import com.yixihan.template.common.exception.BizException;
 import com.yixihan.template.mapper.third.ObjectStorageMapper;
 import com.yixihan.template.model.third.ObjectStorage;
 import com.yixihan.template.service.third.ObjectStorageService;
-import com.yixihan.template.util.Assert;
-import com.yixihan.template.util.FileUtil;
-import com.yixihan.template.util.UserUtil;
-import com.yixihan.template.util.builder.*;
+import com.yixihan.template.common.util.Assert;
+import com.yixihan.template.common.util.FileUtil;
+import com.yixihan.template.common.util.UserUtil;
+import com.yixihan.template.common.builder.*;
 import com.yixihan.template.vo.req.third.OsCertificateReq;
 import com.yixihan.template.vo.req.third.OsUploadReq;
 import jakarta.annotation.Resource;
@@ -19,8 +19,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.net.URL;
 
 /**
  * <p>

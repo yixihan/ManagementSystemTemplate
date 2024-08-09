@@ -4,7 +4,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.yixihan.template.mapper.third.TemplateMapper;
 import com.yixihan.template.model.third.Template;
 import com.yixihan.template.service.third.TemplateService;
-import com.yixihan.template.util.Assert;
+import com.yixihan.template.common.util.Assert;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
