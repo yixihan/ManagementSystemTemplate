@@ -36,20 +36,7 @@ public interface PermissionService extends IService<Permission> {
      */
     List<PermissionVO> getRolePermission(Long roleId);
 
-    /**
-     * 校验权限 id 是否存在
-     *
-     * @param permissionIdList 权限 id
-     */
-    void validatePermissionId(List<Long> permissionIdList);
-
-    /**
-     * 校验权限 id 是否存在
-     *
-     * @param permissionId 权限 id
-     */
-    void validatePermissionId(Long permissionId);
-
+    // ===== basic CRUD
     /**
      * 修改权限
      *
@@ -73,4 +60,20 @@ public interface PermissionService extends IService<Permission> {
      * @return {@link PermissionVO}
      */
     PermissionVO permissionDetail(Long permissionId);
+
+    // ===== validate
+
+    /**
+     * 校验权限 id 是否存在
+     *
+     * @param permissionIdList 权限 id
+     */
+    void validatePermissionId(List<Long> permissionIdList);
+
+    /**
+     * 校验权限 id 是否存在
+     *
+     * @param permissionId 权限 id
+     */
+    void validatePermissionId(Long permissionId);
 }

@@ -59,7 +59,7 @@ public class JobInfoServiceImpl extends ServiceImpl<JobInfoMapper, JobInfo> impl
     public PageVO<JobInfo> queryJob(JobQueryReq req) {
         Page<JobInfo> page = lambdaQuery()
                 .eq(StrUtil.isNotBlank(req.getJobCode()), JobInfo::getJobCode, req.getJobCode())
-                .eq(StrUtil.isNotBlank(req.getJobName()), JobInfo::getJobCode, req.getJobName())
+                .eq(StrUtil.isNotBlank(req.getJobName()), JobInfo::getJobName, req.getJobName())
                 .in(CollUtil.isNotEmpty(req.getJobStatus()), JobInfo::getJobStatus, req.getJobStatus())
                 .orderByDesc(JobInfo::getLastExecuteDate)
                 .page(PageUtil.toPage(req));
@@ -90,7 +90,7 @@ public class JobInfoServiceImpl extends ServiceImpl<JobInfoMapper, JobInfo> impl
         JobInfo jobInfo = getById(req.getJobId());
 
         if (ObjUtil.isNull(jobInfo)) {
-            Panic.noSuchEntry(req.getJobId());
+            Panic.noSuchEntry(JobInfo.class, req.getJobId());
         }
         if (!CommonStatusEnums.INVALID.name().equals(req.getJobStatus()) && !CommonStatusEnums.VALID.name().equals(req.getJobStatus())) {
             Panic.invalidParam(req.getJobStatus());
@@ -113,6 +113,9 @@ public class JobInfoServiceImpl extends ServiceImpl<JobInfoMapper, JobInfo> impl
         return PageUtil.pageToPageVO(page);
     }
 
+    /**
+     * 初始化 - 获取所有 job
+     */
     private void initJobInterfaceList() {
         if (CollUtil.isEmpty(jobInterfaceMap)) {
             synchronized (JobInfoServiceImpl.class) {

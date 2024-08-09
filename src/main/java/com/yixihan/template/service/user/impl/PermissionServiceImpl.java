@@ -52,7 +52,6 @@ public class PermissionServiceImpl extends ServiceImpl<PermissionMapper, Permiss
         for (Long roleId : roleIdList) {
             permissionMap.put(roleId, getRolePermission(roleId));
         }
-
         return permissionMap;
     }
 
@@ -63,44 +62,13 @@ public class PermissionServiceImpl extends ServiceImpl<PermissionMapper, Permiss
         if (ObjUtil.isNull(roleId)) {
             return List.of();
         }
+
         List<Permission> permissionList = baseMapper.getRolePermission(roleId);
         return BeanUtil.copyToList(permissionList, PermissionVO.class);
     }
 
     @Override
-    public void validatePermissionId(List<Long> permissionIdList) {
-        if (CollUtil.isEmpty(permissionIdList)) {
-            return;
-        }
-        Long count = lambdaQuery()
-                .in(Permission::getPermissionId, permissionIdList)
-                .count();
-
-        if (count == permissionIdList.size()) {
-            return;
-        }
-
-        Set<Long> permissionIdSet = lambdaQuery()
-                .select(Permission::getPermissionId)
-                .in(Permission::getPermissionId, permissionIdList)
-                .list()
-                .stream()
-                .map(Permission::getPermissionId)
-                .collect(Collectors.toSet());
-
-        for (Long id : permissionIdList) {
-            if (!permissionIdSet.contains(id)) {
-                Panic.noSuchEntry(id);
-            }
-        }
-    }
-
-    @Override
-    public void validatePermissionId(Long permissionId) {
-        validatePermissionId(CollUtil.toList(permissionId));
-    }
-
-    @Override
+    @Transactional(rollbackFor = Exception.class)
     public PermissionVO modifyPermission(PermissionModifyReq req) {
         Assert.notNull(req);
         Assert.notNull(req.getPermissionId());
@@ -108,16 +76,17 @@ public class PermissionServiceImpl extends ServiceImpl<PermissionMapper, Permiss
 
         Permission permission = getById(req.getPermissionId());
         if (ObjUtil.isNull(permission)) {
-            Panic.noSuchEntry(req.getPermissionId());
+            Panic.noSuchEntry(Permission.class, req.getPermissionId());
         }
 
         permission.setStatus(req.getStatus());
         updateById(permission);
 
-        return permissionToVO(permission);
+        return BeanUtil.toBean(permission, PermissionVO.class);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public PageVO<PermissionVO> queryPermission(PermissionQueryReq req) {
         Assert.notNull(req);
 
@@ -127,26 +96,55 @@ public class PermissionServiceImpl extends ServiceImpl<PermissionMapper, Permiss
                 .in(CollUtil.isNotEmpty(req.getStatus()), Permission::getStatus, req.getStatus())
                 .page(PageUtil.toPage(req));
 
-        return PageUtil.pageToPageVO(page, this::permissionToVO);
+        return PageUtil.pageToPageVO(page, o -> BeanUtil.toBean(o, PermissionVO.class));
     }
 
     @Override
+    @Transactional(readOnly = true)
     public PermissionVO permissionDetail(Long permissionId) {
         Assert.notNull(permissionId);
 
         Permission permission = getById(permissionId);
         if (ObjUtil.isNull(permission)) {
-            Panic.noSuchEntry(permissionId);
+            Panic.noSuchEntry(Permission.class, permissionId);
         }
-        return permissionToVO(permission);
+        return BeanUtil.toBean(permission, PermissionVO.class);
     }
 
-    private PermissionVO permissionToVO(Permission permission) {
-        PermissionVO vo = new PermissionVO();
-        vo.setPermissionId(permission.getPermissionId());
-        vo.setPermissionCode(permission.getPermissionCode());
-        vo.setPermissionName(permission.getPermissionName());
-        vo.setStatus(permission.getStatus());
-        return vo;
+    @Override
+    @Transactional(readOnly = true)
+    public void validatePermissionId(List<Long> permissionIdList) {
+        if (CollUtil.isEmpty(permissionIdList)) {
+            return;
+        }
+
+        // 直接根据数量对比
+        Long count = lambdaQuery()
+                .in(Permission::getPK, permissionIdList)
+                .count();
+        if (count == permissionIdList.size()) {
+            return;
+        }
+
+        // 逐个对比
+        Set<Long> permissionIdSet = lambdaQuery()
+                .select(Permission::getPK)
+                .in(Permission::getPK, permissionIdList)
+                .list()
+                .stream()
+                .map(Permission::getPK)
+                .collect(Collectors.toSet());
+
+        for (Long id : permissionIdList) {
+            if (!permissionIdSet.contains(id)) {
+                Panic.noSuchEntry(Permission.class, id);
+            }
+        }
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public void validatePermissionId(Long permissionId) {
+        validatePermissionId(CollUtil.toList(permissionId));
     }
 }

@@ -1,6 +1,6 @@
 package com.yixihan.template.service.user.impl;
 
-import cn.hutool.core.util.ObjUtil;
+import com.yixihan.template.common.util.Assert;
 import com.yixihan.template.model.user.Role;
 import com.yixihan.template.model.user.RolePermission;
 import com.yixihan.template.mapper.user.RolePermissionMapper;
@@ -26,16 +26,18 @@ public class RolePermissionServiceImpl extends ServiceImpl<RolePermissionMapper,
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void saveRolePermission(Role role, List<Long> permissionIdList) {
-        if (ObjUtil.isNotNull(role.getRoleId())) {
-            List<RolePermission> rolePermissionList = new ArrayList<>(permissionIdList.size());
-            permissionIdList.forEach(permissionId -> {
-                RolePermission rolePermission = new RolePermission();
-                rolePermission.setPermissionId(permissionId);
-                rolePermission.setRoleId(role.getRoleId());
-                rolePermissionList.add(rolePermission);
-            });
-            saveBatch(rolePermissionList);
-        }
+        Assert.notNull(role);
+        Assert.notNull(role.getRoleId());
+
+        List<RolePermission> rolePermissionList = new ArrayList<>(permissionIdList.size());
+        permissionIdList.forEach(permissionId -> {
+            RolePermission rolePermission = new RolePermission();
+            rolePermission.setPermissionId(permissionId);
+            rolePermission.setRoleId(role.getRoleId());
+            rolePermissionList.add(rolePermission);
+        });
+        saveBatch(rolePermissionList);
+
     }
 
 }

@@ -1,5 +1,6 @@
 package com.yixihan.template.common.util;
 
+import cn.hutool.core.util.ClassUtil;
 import cn.hutool.core.util.StrUtil;
 import com.yixihan.template.common.enums.ExceptionEnums;
 import com.yixihan.template.common.exception.*;
@@ -11,6 +12,7 @@ import com.yixihan.template.model.BaseModel;
  * @author yixihan
  * @date 2024-05-26 11:44
  */
+@SuppressWarnings("unused")
 public class Panic {
 
     public static void noAuth(String errMsg) {
@@ -26,11 +28,11 @@ public class Panic {
     }
 
     public static void noSuchEntry(BaseModel model) {
-        throw new InvalidEntryException(StrUtil.format("can not find {}[PrimaryKey : {}]", model.getClass().getSimpleName(), model.getPK()));
+        throw new InvalidEntryException(StrUtil.format("can not find Entry[{} : {}]", ClassUtil.getClassName(model.getClass(), true), model.getPK()));
     }
 
-    public static void noSuchEntry(Long pk) {
-        throw new InvalidEntryException(StrUtil.format("can not find Entry[PrimaryKey : {}]", pk));
+    public static void noSuchEntry(Class<?> clazz, Long pk) {
+        throw new InvalidEntryException(StrUtil.format("can not find Entry[{} : {}]", ClassUtil.getClassName(clazz, true), pk));
     }
 
     public static void invalidStatus(String mark) {
@@ -39,5 +41,17 @@ public class Panic {
 
     public static void invalidParam(String param) {
         throw new InvalidParameterException(StrUtil.format("req param[{}] is invalid", param));
+    }
+
+    public static void logic(String errMsg) {
+        throw new BizException(errMsg);
+    }
+
+    public static void logic(String format, Object... args) {
+        throw new BizException(StrUtil.format(format, args));
+    }
+
+    public static void logic(ExceptionEnums enums) {
+        throw new BizException(enums);
     }
 }

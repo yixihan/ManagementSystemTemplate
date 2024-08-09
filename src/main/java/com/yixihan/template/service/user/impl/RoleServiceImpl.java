@@ -7,6 +7,7 @@ import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.yixihan.template.auth.enums.RoleEnums;
 import com.yixihan.template.common.enums.CommonStatusEnums;
+import com.yixihan.template.common.util.Panic;
 import com.yixihan.template.model.user.Role;
 import com.yixihan.template.mapper.user.RoleMapper;
 import com.yixihan.template.model.user.UserRole;
@@ -28,6 +29,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -57,19 +59,23 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements Ro
             return List.of();
         }
 
+        // 获取用户角色 id 列表 - 查询 user_role 表
         List<Long> roleIdList = getUserRoleIdList(userId);
 
         if (CollUtil.isEmpty(roleIdList)) {
             return List.of();
         }
+
+        // 获取用户角色列表
         List<RoleVO> roleList = lambdaQuery()
                 .in(Role::getRoleId, roleIdList)
                 .list()
                 .stream()
                 .map(it -> BeanUtil.toBean(it, RoleVO.class))
                 .toList();
+        // 获取角色权限列表
         Map<Long, List<PermissionVO>> permissionMap = permissionService.getRolePermission(roleIdList);
-
+        // 数据组装
         for (RoleVO role : roleList) {
             role.setPermissionList(permissionMap.get(role.getRoleId()));
         }
@@ -85,6 +91,7 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements Ro
             return List.of();
         }
 
+        // 获取用户角色 id 列表 - 查询 user_role 表
         List<Long> roleIdList = getUserRoleIdList(userId);
 
         if (CollUtil.isEmpty(roleIdList)) {
@@ -92,6 +99,7 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements Ro
         }
 
         Set<PermissionVO> permissionSet = new HashSet<>();
+        // 获取用户权限列表
         for (Map.Entry<Long, List<PermissionVO>> entry : permissionService.getRolePermission(roleIdList).entrySet()) {
             permissionSet.addAll(entry.getValue());
         }
@@ -100,6 +108,7 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements Ro
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Long getUserRoleId() {
         return lambdaQuery()
                 .eq(Role::getRoleCode, RoleEnums.USER)
@@ -119,7 +128,7 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements Ro
 
         Role role = reqToRole(req);
         save(role);
-        return roleToRoleVO(role);
+        return BeanUtil.toBean(role, RoleVO.class);
     }
 
     @Override
@@ -138,7 +147,7 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements Ro
             rolePermissionService.saveRolePermission(role, req.getPermissionIdList());
         }
 
-        return roleToRoleVO(role);
+        return BeanUtil.toBean(role, RoleVO.class);
     }
 
     @Override
@@ -169,16 +178,62 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements Ro
                 .orderByDesc(Role::getUpdateDate)
                 .page(PageUtil.toPage(req));
 
-        return PageUtil.pageToPageVO(page, this::roleToRoleVO);
+        return PageUtil.pageToPageVO(page, o -> BeanUtil.toBean(o, RoleVO.class));
     }
 
     @Override
     @Transactional(readOnly = true)
     public RoleVO roleDetail(Long roleId) {
-        Role role = getOptById(roleId).orElse(new Role());
-        return roleToRoleVO(role);
+        Role role = getById(roleId);
+
+        if (ObjUtil.isNull(role)) {
+            Panic.noSuchEntry(Role.class, roleId);
+        }
+        return BeanUtil.toBean(role, RoleVO.class);
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public void validateRoleId(List<Long> roleIdList) {
+        if (CollUtil.isEmpty(roleIdList)) {
+            return;
+        }
+
+        // 直接根据数量对比
+        Long count = lambdaQuery()
+                .in(Role::getPK, roleIdList)
+                .count();
+        if (count == roleIdList.size()) {
+            return;
+        }
+
+        // 逐个对比
+        Set<Long> roleIdSet = lambdaQuery()
+                .select(Role::getPK)
+                .in(Role::getPK, roleIdList)
+                .list()
+                .stream()
+                .map(Role::getPK)
+                .collect(Collectors.toSet());
+
+        for (Long id : roleIdList) {
+            if (!roleIdSet.contains(id)) {
+                Panic.noSuchEntry(Role.class, id);
+            }
+        }
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public void validateRoleId(Long roleId) {
+        validateRoleId(CollUtil.toList(roleId));
+    }
+
+    /**
+     * 获取用户角色 id 列表 - 查询 user_role 关联表
+     * @param userId user id
+     * @return List of role id
+     */
     private List<Long> getUserRoleIdList(Long userId) {
         if (ObjUtil.isNull(userId)) {
             return List.of();
@@ -193,6 +248,11 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements Ro
                 .toList();
     }
 
+    /**
+     * {@link RoleModifyReq} to {@link Role}
+     * @param req role modify req
+     * @return role model
+     */
     private Role reqToRole(RoleModifyReq req) {
         Role role = new Role();
         role.setRoleId(req.getRoleId());
@@ -200,15 +260,5 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements Ro
         role.setRoleName(role.getRoleName());
         role.setStatus(req.getStatus());
         return role;
-    }
-
-    private RoleVO roleToRoleVO(Role role) {
-        RoleVO vo = new RoleVO();
-        vo.setRoleId(role.getRoleId());
-        vo.setRoleCode(role.getRoleCode());
-        vo.setRoleName(role.getRoleName());
-        vo.setStatus(role.getStatus());
-        vo.setPermissionList(permissionService.getRolePermission(role.getRoleId()));
-        return vo;
     }
 }

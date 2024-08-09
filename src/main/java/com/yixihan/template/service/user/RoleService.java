@@ -43,6 +43,8 @@ public interface RoleService extends IService<Role> {
      */
     Long getUserRoleId();
 
+    // ===== basic CRUD
+
     /**
      * 新增角色
      *
@@ -81,4 +83,20 @@ public interface RoleService extends IService<Role> {
      * @return {@link RoleVO}
      */
     RoleVO roleDetail(Long roleId);
+
+    // ===== validate
+
+    /**
+     * 校验角色 id 是否存在
+     *
+     * @param roleIdList List of role id
+     */
+    void validateRoleId(List<Long> roleIdList);
+
+    /**
+     * 校验角色 id 是否存在
+     *
+     * @param roleId role id
+     */
+    void validateRoleId(Long roleId);
 }
