@@ -54,4 +54,13 @@ public class RolePermission extends BaseModel {
 
     public static final String DEL_FLAG = "del_flag";
 
+    @Override
+    public Long getPK() {
+        return rolePermissionId;
+    }
+
+    @Override
+    public void setPK(Long pk) {
+        this.rolePermissionId = pk;
+    }
 }

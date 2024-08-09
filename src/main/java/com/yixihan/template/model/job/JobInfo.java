@@ -72,4 +72,13 @@ public class JobInfo extends BaseModel {
 
     public static final String DEL_FLAG = "del_flag";
 
+    @Override
+    public Long getPK() {
+        return jobId;
+    }
+
+    @Override
+    public void setPK(Long pk) {
+        this.jobId = pk;
+    }
 }

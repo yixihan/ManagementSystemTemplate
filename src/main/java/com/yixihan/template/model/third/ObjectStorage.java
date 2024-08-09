@@ -77,4 +77,13 @@ public class ObjectStorage extends BaseModel {
 
     public static final String DEL_FLAG = "del_flag";
 
+    @Override
+    public Long getPK() {
+        return osId;
+    }
+
+    @Override
+    public void setPK(Long pk) {
+        this.osId = pk;
+    }
 }

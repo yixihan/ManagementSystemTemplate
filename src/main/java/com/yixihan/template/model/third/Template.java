@@ -53,4 +53,14 @@ public class Template extends BaseModel {
     public static final String VERSION = "version";
 
     public static final String DEL_FLAG = "del_flag";
+
+    @Override
+    public Long getPK() {
+        return templateId;
+    }
+
+    @Override
+    public void setPK(Long pk) {
+        this.templateId = pk;
+    }
 }

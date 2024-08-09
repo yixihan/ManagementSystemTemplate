@@ -24,7 +24,7 @@ import java.util.Date;
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
 @Schema(description = "基础 Model")
-public class BaseModel implements Serializable {
+public abstract class BaseModel implements Serializable {
 
     @Serial
     private static final long serialVersionUID = 3291058324355093826L;
@@ -43,4 +43,16 @@ public class BaseModel implements Serializable {
     @Schema(description = "逻辑删除")
     @TableLogic
     private Boolean delFlag;
+
+    /**
+     * 获取主键 id
+     *
+     * @return primaryKey
+     */
+    public abstract Long getPK();
+
+    /**
+     * 设置主键 id
+     */
+    public abstract void setPK(Long pk);
 }

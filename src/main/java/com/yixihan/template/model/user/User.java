@@ -69,4 +69,13 @@ public class User extends BaseModel {
 
     public static final String DEL_FLAG = "del_flag";
 
+    @Override
+    public Long getPK() {
+        return userId;
+    }
+
+    @Override
+    public void setPK(Long pk) {
+        this.userId = pk;
+    }
 }

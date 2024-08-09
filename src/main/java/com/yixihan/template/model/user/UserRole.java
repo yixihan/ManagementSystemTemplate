@@ -54,4 +54,13 @@ public class UserRole extends BaseModel {
 
     public static final String DEL_FLAG = "del_flag";
 
+    @Override
+    public Long getPK() {
+        return userRoleId;
+    }
+
+    @Override
+    public void setPK(Long pk) {
+        this.userRoleId = pk;
+    }
 }
