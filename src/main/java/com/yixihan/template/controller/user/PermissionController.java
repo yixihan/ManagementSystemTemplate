@@ -11,6 +11,7 @@ import com.yixihan.template.vo.resp.base.ApiResp;
 import com.yixihan.template.vo.resp.base.PageVO;
 import com.yixihan.template.vo.resp.user.PermissionVO;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,6 +25,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
  * @author yixihan
  * @since 2024-05-24
  */
+@Tag(name = "权限 OpenAPI")
 @RestController
 @RequestMapping("/permission")
 public class PermissionController extends BaseController {
@@ -32,21 +34,28 @@ public class PermissionController extends BaseController {
     private PermissionService permissionService;
 
     @Operation(summary = "修改权限")
-    @HasAnyPermission(permissionCode = PermissionEnums.ADMIN_PERMISSION_MODIFY)
+    @HasAnyPermission(permissionCode = {
+            PermissionEnums.ADMIN_PERMISSION_LIST,
+            PermissionEnums.ADMIN_PERMISSION_MODIFY,
+    })
     @PostMapping(value = "/modify", produces = APPLICATION_JSON_VALUE)
     public ApiResp<PermissionVO> modifyPermission(@RequestBody PermissionModifyReq req) {
         return run(permissionService::modifyPermission, req);
     }
 
     @Operation(summary = "查询权限")
-    @HasAnyPermission(permissionCode = PermissionEnums.ADMIN_PERMISSION_LIST)
+    @HasAnyPermission(permissionCode = {
+            PermissionEnums.ADMIN_PERMISSION_LIST
+    })
     @PostMapping(value = "/query", produces = APPLICATION_JSON_VALUE)
     public ApiResp<PageVO<PermissionVO>> queryPermission(@RequestBody PermissionQueryReq req) {
         return run(permissionService::queryPermission, req);
     }
 
     @Operation(summary = "权限详情")
-    @HasAnyPermission(permissionCode = PermissionEnums.ADMIN_PERMISSION_LIST)
+    @HasAnyPermission(permissionCode = {
+            PermissionEnums.ADMIN_PERMISSION_LIST
+    })
     @GetMapping(value = "/detail", produces = APPLICATION_JSON_VALUE)
     public ApiResp<PermissionVO> permissionDetail(@RequestParam("permissionId") Long permissionId) {
         return run(permissionService::permissionDetail, permissionId);

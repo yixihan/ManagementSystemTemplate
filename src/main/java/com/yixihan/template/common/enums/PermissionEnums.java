@@ -31,6 +31,7 @@ public enum PermissionEnums {
     ADMIN_USER_LIST("ADMIN_USER_LIST", "List User"),
 
     ADMIN_JOB("ADMIN_JOB", "Admin Job"),
+    ADMIN_JOB_EXEC("ADMIN_JOB_EXEC", "Execute Job"),
     ADMIN_JOB_MODIFY("ADMIN_JOB_MODIFY", "Modify Job"),
     ADMIN_JOB_LIST("ADMIN_JOB_LIST", "List Job"),
     ADMIN_JOB_EXECUTE("ADMIN_JOB_EXECUTE", "Execute Job"),

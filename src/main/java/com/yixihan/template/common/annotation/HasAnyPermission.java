@@ -24,7 +24,7 @@ public @interface HasAnyPermission {
     boolean allowAnonymousUser() default false;
 
     /**
-     * 访问所需的权限 code
+     * 访问所需的权限 code, 必须全都有才能访问
      */
     PermissionEnums[] permissionCode() default {};
 }

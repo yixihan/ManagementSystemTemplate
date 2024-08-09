@@ -37,28 +37,38 @@ public class JobController extends BaseController {
     private JobInfoService jobInfoService;
 
     @Operation(summary = "分页查询 job")
-    @HasAnyPermission(permissionCode = {PermissionEnums.ADMIN_JOB_LIST})
+    @HasAnyPermission(permissionCode = {
+            PermissionEnums.ADMIN_JOB_LIST,
+    })
     @PostMapping(value = "/query", produces = APPLICATION_JSON_VALUE)
     public ApiResp<PageVO<JobInfo>> queryJob(@RequestBody JobQueryReq req) {
         return run(jobInfoService::queryJob, req);
     }
 
     @Operation(summary = "分页查询 job 执行记录")
-    @HasAnyPermission(permissionCode = {PermissionEnums.ADMIN_JOB_LIST})
+    @HasAnyPermission(permissionCode = {
+            PermissionEnums.ADMIN_JOB_LIST,
+    })
     @PostMapping(value = "/his/query", produces = APPLICATION_JSON_VALUE)
     public ApiResp<PageVO<JobHis>> queryJobHis(@RequestBody JobHisQueryReq req) {
         return run(jobInfoService::queryJobHis, req);
     }
 
     @Operation(summary = "手动执行 job")
-    @HasAnyPermission(permissionCode = {PermissionEnums.ADMIN_JOB_EXECUTE})
+    @HasAnyPermission(permissionCode = {
+            PermissionEnums.ADMIN_JOB_LIST,
+            PermissionEnums.ADMIN_JOB_EXEC,
+    })
     @PutMapping(value = "/trigger", produces = APPLICATION_JSON_VALUE)
     public ApiResp<Void> triggerJob(@RequestBody JobParam req) {
         return run(jobInfoService::triggerJob, req);
     }
 
     @Operation(summary = "更新 job 状态")
-    @HasAnyPermission(permissionCode = {PermissionEnums.ADMIN_JOB_MODIFY})
+    @HasAnyPermission(permissionCode = {
+            PermissionEnums.ADMIN_JOB_LIST,
+            PermissionEnums.ADMIN_JOB_MODIFY
+    })
     @PostMapping(value = "/update", produces = APPLICATION_JSON_VALUE)
     public ApiResp<JobInfo> updateJob(@RequestBody JobUpdateReq req) {
         return run(jobInfoService::updateJob, req);
