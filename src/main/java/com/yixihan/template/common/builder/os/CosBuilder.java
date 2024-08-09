@@ -1,4 +1,4 @@
-package com.yixihan.template.common.builder;
+package com.yixihan.template.common.builder.os;
 
 import cn.hutool.core.lang.UUID;
 import cn.hutool.extra.spring.SpringUtil;
@@ -9,6 +9,7 @@ import com.qcloud.cos.model.*;
 import com.qcloud.cos.transfer.TransferManager;
 import com.qcloud.cos.transfer.Upload;
 import com.qcloud.cos.utils.DateUtils;
+import com.yixihan.template.config.os.OsClientConfig;
 import com.yixihan.template.config.third.OsConfig;
 import com.yixihan.template.common.exception.BizException;
 import com.yixihan.template.common.exception.InvalidParameterException;
@@ -26,12 +27,14 @@ import java.util.Map;
  * <br/>
  * <a href="https://cloud.tencent.com/document/product/436/10199">COS Java SDK Doc</a>
  * <br/>
- * 仅实现了服务端简单上传、客户端直传与下载, 复杂功能请获取 CosClient 后自己实现
+ * 仅实现了服务端简单上传、客户端直传与下载, 复杂功能请获取 CosClient 后自己实现<br>
+ * ps: 未经过测试, 更推荐直接使用 {@link COSClient}, 已在 {@link OsClientConfig} 实现注入
  *
  * @author yixihan
  * @date 2024-06-11 10:25
  */
 @Slf4j
+@SuppressWarnings("unused")
 public class CosBuilder {
 
     /**

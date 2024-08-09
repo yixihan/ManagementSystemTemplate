@@ -1,4 +1,4 @@
-package com.yixihan.template.common.builder;
+package com.yixihan.template.common.builder.os;
 
 import cn.hutool.extra.spring.SpringUtil;
 import com.yixihan.template.config.third.OsConfig;

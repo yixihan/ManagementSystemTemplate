@@ -1,4 +1,4 @@
-package com.yixihan.template.common.builder;
+package com.yixihan.template.common.builder.os;
 
 import cn.hutool.core.lang.UUID;
 import cn.hutool.core.util.ObjUtil;
@@ -12,6 +12,7 @@ import com.qiniu.storage.Region;
 import com.qiniu.storage.UploadManager;
 import com.qiniu.util.Auth;
 import com.qiniu.util.StringMap;
+import com.yixihan.template.config.os.OsClientConfig;
 import com.yixihan.template.config.third.OsConfig;
 import com.yixihan.template.common.exception.InvalidParameterException;
 import com.yixihan.template.common.util.Assert;
@@ -24,8 +25,8 @@ import java.io.InputStream;
 /**
  * 七牛云 Kodo 图床 builder
  * <br/>
- * 文档: <a href="https://developer.qiniu.com/kodo/1239/java#1">七牛云 Kodo Java SDK Doc</a>
- *
+ * 文档: <a href="https://developer.qiniu.com/kodo/1239/java#1">七牛云 Kodo Java SDK Doc</a><br>
+ * ps: 未经过测试, 更推荐直接使用 {@link Auth} & {@link UploadManager}, 已在 {@link OsClientConfig} 实现注入
  * @author yixihan
  * @date 2024-06-04 16:13
  */

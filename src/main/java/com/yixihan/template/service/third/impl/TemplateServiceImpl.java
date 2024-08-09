@@ -1,6 +1,8 @@
 package com.yixihan.template.service.third.impl;
 
+import cn.hutool.core.util.ObjUtil;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.yixihan.template.common.util.Panic;
 import com.yixihan.template.mapper.third.TemplateMapper;
 import com.yixihan.template.model.third.Template;
 import com.yixihan.template.service.third.TemplateService;
@@ -24,10 +26,14 @@ public class TemplateServiceImpl extends ServiceImpl<TemplateMapper, Template> i
     public String getTemplateContent(String templateCode) {
         Assert.notBlank(templateCode);
 
-        return lambdaQuery()
+        Template template = lambdaQuery()
                 .eq(Template::getTemplateCode, templateCode)
-                .oneOpt()
-                .orElse(new Template())
-                .getContent();
+                .one();
+
+        if (ObjUtil.isNull(template)) {
+            Panic.noSuchEntry(Template.class, templateCode);
+        }
+        return template.getContent();
+
     }
 }

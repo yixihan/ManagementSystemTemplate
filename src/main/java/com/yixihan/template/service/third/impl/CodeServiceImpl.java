@@ -63,6 +63,15 @@ public class CodeServiceImpl implements CodeService {
         return code;
     }
 
+    /**
+     * 获取随机验证码, 并存入 redis 中
+     *
+     * @return code
+     */
+    private synchronized String getRandomCode() {
+        return RandomUtil.randomNumbers(codeConfig.getLen());
+    }
+
     @Override
     public void validate(String keyName, String code) {
         Long expire = stringRedisTemplate.getExpire(keyName);
@@ -73,15 +82,6 @@ public class CodeServiceImpl implements CodeService {
         // 校验验证码是否正确
         Assert.isTrue(code.equals(stringRedisTemplate.opsForValue().get(keyName)),
                 new CodeException(ExceptionEnums.CODE_VALIDATE_ERROR));
-    }
-
-    /**
-     * 获取随机验证码, 并存入 redis 中
-     *
-     * @return code
-     */
-    private synchronized String getRandomCode() {
-        return RandomUtil.randomNumbers(codeConfig.getLen());
     }
 
     @Override
@@ -140,24 +140,26 @@ public class CodeServiceImpl implements CodeService {
     private String getEmailRedisKey(String email, CodeTypeEnums codeType) {
         String key;
         switch (codeType) {
-            case LOGIN:
+            case LOGIN: {
                 key = StrUtil.format(emailConfig.getLoginKey(), email);
-                // 非注册类型, 校验用户是否存在
-                Assert.isTrue(userService.validateUserEmail(email), ExceptionEnums.ACCOUNT_NOT_FOUND);
                 break;
-            case REGISTER:
+            }
+            case REGISTER: {
                 key = StrUtil.format(emailConfig.getRegisterKey(), email);
                 break;
-            case PASSWORD:
+            }
+            case PASSWORD: {
                 key = StrUtil.format(emailConfig.getUpdatePasswordKey(), email);
                 // 非注册类型, 校验用户是否存在
                 Assert.isTrue(userService.validateUserEmail(email), ExceptionEnums.ACCOUNT_NOT_FOUND);
                 break;
-            case COMMON:
+            }
+            case COMMON: {
                 key = StrUtil.format(emailConfig.getCommonKey(), email);
                 // 非注册类型, 校验用户是否存在
                 Assert.isTrue(userService.validateUserEmail(email), ExceptionEnums.ACCOUNT_NOT_FOUND);
                 break;
+            }
             default:
                 throw new AuthException(ExceptionEnums.PARAMS_VALID_ERR);
         }
@@ -213,24 +215,26 @@ public class CodeServiceImpl implements CodeService {
     private String getSmsRedisKey(String mobile, CodeTypeEnums codeType) {
         String key;
         switch (codeType) {
-            case LOGIN:
+            case LOGIN: {
                 key = StrUtil.format(emailConfig.getLoginKey(), mobile);
-                // 非注册类型, 校验用户是否存在
-                Assert.isTrue(userService.validateUserMobile(mobile), ExceptionEnums.ACCOUNT_NOT_FOUND);
                 break;
-            case REGISTER:
+            }
+            case REGISTER: {
                 key = StrUtil.format(emailConfig.getRegisterKey(), mobile);
                 break;
-            case PASSWORD:
+            }
+            case PASSWORD: {
                 key = StrUtil.format(emailConfig.getUpdatePasswordKey(), mobile);
                 // 非注册类型, 校验用户是否存在
                 Assert.isTrue(userService.validateUserMobile(mobile), ExceptionEnums.ACCOUNT_NOT_FOUND);
                 break;
-            case COMMON:
+            }
+            case COMMON: {
                 key = StrUtil.format(emailConfig.getCommonKey(), mobile);
                 // 非注册类型, 校验用户是否存在
                 Assert.isTrue(userService.validateUserMobile(mobile), ExceptionEnums.ACCOUNT_NOT_FOUND);
                 break;
+            }
             default:
                 throw new AuthException(ExceptionEnums.PARAMS_VALID_ERR);
         }

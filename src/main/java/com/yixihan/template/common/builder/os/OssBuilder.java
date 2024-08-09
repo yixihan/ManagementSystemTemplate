@@ -1,12 +1,14 @@
-package com.yixihan.template.common.builder;
+package com.yixihan.template.common.builder.os;
 
 import cn.hutool.core.util.ObjUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.extra.spring.SpringUtil;
 import com.aliyun.oss.OSS;
+import com.aliyun.oss.OSSClient;
 import com.aliyun.oss.OSSClientBuilder;
 import com.aliyun.oss.common.utils.BinaryUtil;
 import com.aliyun.oss.model.*;
+import com.yixihan.template.config.os.OsClientConfig;
 import com.yixihan.template.config.third.OsConfig;
 import com.yixihan.template.common.exception.BizException;
 import com.yixihan.template.common.exception.InvalidParameterException;
@@ -26,8 +28,8 @@ import java.util.Map;
  * <br/>
  * <a href="https://help.aliyun.com/zh/oss/developer-reference/java/?spm=a2c4g.11186623.0.0.418c5b0fMJNrk7">OSS Java SDK Doc</a>
  * <br/>
- * 仅实现了服务端简单上传、客户端直传与下载, 复杂功能请获取 OssClient 后自己实现
- *
+ * 仅实现了服务端简单上传、客户端直传与下载, 复杂功能请获取 OssClient 后自己实现 <br>
+ * ps: 未经过测试, 更推荐直接使用 {@link OSSClient} , 已在 {@link OsClientConfig} 实现注入
  * @author yixihan
  * @date 2024-06-06 11:03
  */

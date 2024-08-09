@@ -31,7 +31,7 @@ public class Panic {
         throw new InvalidEntryException(StrUtil.format("can not find Entry[{} : {}]", ClassUtil.getClassName(model.getClass(), true), model.getPK()));
     }
 
-    public static void noSuchEntry(Class<?> clazz, Long pk) {
+    public static void noSuchEntry(Class<?> clazz, Object pk) {
         throw new InvalidEntryException(StrUtil.format("can not find Entry[{} : {}]", ClassUtil.getClassName(clazz, true), pk));
     }
 

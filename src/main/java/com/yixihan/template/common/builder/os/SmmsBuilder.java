@@ -1,4 +1,4 @@
-package com.yixihan.template.common.builder;
+package com.yixihan.template.common.builder.os;
 
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.ObjUtil;
@@ -19,7 +19,8 @@ import java.util.Map;
 /**
  * SM.MS 图床 builder
  * <br/>
- * 文档: <a href="https://doc.sm.ms/#api-_">SM.MS API Doc</a>
+ * 文档: <a href="https://doc.sm.ms/#api-_">SM.MS API Doc</a><br>
+ * ps: 未经过测试
  *
  * @author yixihan
  * @date 2024-06-04 14:15
