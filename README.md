@@ -41,7 +41,7 @@ Job 主要分为两类
 - job_info: 记录 Job 的基础信息
 - job_his: 记录 Job 的执行记录
 
-![job_db_er.png](src/main/resources/static/doc/readme/job_db_er.png)
+![job_db_er.png](src/main/resources/static/doc/readme/job_db_err.png)
 
 > 相关类
 
@@ -100,5 +100,102 @@ public void runJob(Job job, JobParam param);
 
 ### 异常实现
 
+系统所有自定义异常均基于 `BaseException` ([BaseException](src/main/java/com/yixihan/template/common/exception/BaseException.java))
 
-###  
+异常主要分为四个大块
+- 异常类: 自定义异常类, 自定义异常顶级类为 `BaseException`
+- 异常枚举: 自定义异常枚举, 需要有 `errCode`, `message`, 实现在 `ExceptionEnums` ([ExceptionEnums](src/main/java/com/yixihan/template/common/enums/ExceptionEnums.java))
+- 异常捕获器: api 异常捕获器, 用于捕获执行 api 时抛出的异常, 包装成 `ApiResp` 类, 用于前端解析, 实现在 `GlobalExceptionHandler` ([GlobalExceptionHandler](src/main/java/com/yixihan/template/handler/GlobalExceptionHandler.java))
+- 异常工具类:
+   - `Panic` ([Panic](src/main/java/com/yixihan/template/common/util/Panic.java)): 异常抛出工具, 用于定义一些常见的异常抛出情况
+   - `Assert` ([Assert](src/main/java/com/yixihan/template/common/util/Assert.java)): 断言类, 常用于参数校验
+
+
+#### 异常类详解
+> 异常类关系图
+
+![exception_relationship.png](src/main/resources/static/doc/readme/exception_relationship.png)
+ps: 图中的 `SystemException`, `IntegrationException` 并未实现, 只是举个例子
+
+- `BaseException` ([BaseException](src/main/java/com/yixihan/template/common/exception/BaseException.java)) 是所有自定义异常的父类
+- `BizException` ([BizException](src/main/java/com/yixihan/template/common/exception/BizException.java)) 是所有业务异常的父类
+- 自己自定义的类可以根据实际涵义安放, 比如 `SystemException` 就可以和 `BizException` 平级
+- 异常类应均实现四个构造函数
+```java
+// 默认无参构造方法, 传入该异常类最顶级的异常枚举值
+public CodeException() {
+    super(ExceptionEnums.CODE_VALIDATE_ERROR);
+}
+// 带异常消息的构造方法
+public CodeException(String message) {
+    super(message);
+}
+// 带 Throwable 的构造方法
+public CodeException(Throwable e) {
+    super(e);
+}
+// 带异常枚举值的构造方法, 用于自定义异常枚举
+public CodeException(ExceptionEnums enums) {
+    super(enums);
+}
+```
+
+#### 异常枚举详解
+
+异常枚举是用于定义一些常见的异常情况, 如验证码过期, 无访问权限等异常. 主要包含两个字段
+- `errCode`: 异常 code
+- `message`: 异常描述
+
+可自己实现异常枚举, 参考现有的异常枚举即可
+
+#### 异常工具类详解
+
+> Assert
+
+断言工具, 常用于参数校验, 继承自 hutool 的 `Assert`, 同时重写了部分断言, 用于抛出自定义类
+
+> Panic
+
+异常抛出工具, 用于抛出异常, 实现了一些常用的异常抛出情况, 后续可自行实现
+
+#### 异常捕获器详解
+
+通过 Spring 提供的 `@ControllerAdvice` 注解实现, 捕获了所有的自定义异常以及常见的 Java 异常, 可自己重写其异常包装逻辑
+
+原理自己搜索即可
+
+### 常用类介绍
+
+主要介绍如下几个包下面的类
+- config
+- utils
+
+#### 工具类介绍
+
+- `AppContext` ([AppContext](src/main/java/com/yixihan/template/common/util/AppContext.java)): 应用程序上下文, 通过 `ThreadLocal` 实现, 能获取当前上下文设置的信息, 目前其内仅有 `AuthVO` 字段, 后续可自行添加其他常用的字段
+- `Assert` ([Assert](src/main/java/com/yixihan/template/common/util/Assert.java)): 断言工具
+- `EnvUtil` ([EnvUtil](src/main/java/com/yixihan/template/common/util/EnvUtil.java)): 环境工具, 能获取当前运行的环境, 用于不同环境逻辑不同的情况
+- `FileUtil` ([FileUtil](src/main/java/com/yixihan/template/common/util/FileUtil.java)): 文件工具, 继承自 hutool 的 `FileUtil`, 并自定义实现了部分方法, 可参考 method doc
+- `JwtUtil` ([JwtUtil](src/main/java/com/yixihan/template/common/util/JwtUtil.java)): Jwt 工具, 使用 hutool jwt 实现, 用于生成, 解析, 校验 jwt
+- `MD5Util` ([MD5Util](src/main/java/com/yixihan/template/common/util/MD5Util.java)): MD5 工具, 用于用户密码加密
+- `PageUtil` ([PageUtil](src/main/java/com/yixihan/template/common/util/PageUtil.java)): 分页工具, 用于实现自定义分页查询
+- `Panic` ([Panic](src/main/java/com/yixihan/template/common/util/Panic.java)): 异常抛出工具
+- `UserUtil` ([UserUtil](src/main/java/com/yixihan/template/common/util/UserUtil.java)): 用户工具, 用于获取登录用户信息
+- `ValidationUtil` ([ValidationUtil](src/main/java/com/yixihan/template/common/util/ValidationUtil.java)): 正则校验工具
+
+#### 配置类介绍
+
+- `AuthConfig` [AuthConfig](src/main/java/com/yixihan/template/config/auth/AuthConfig.java): 权限认证配置, 定义了 白名单列表, API 包
+- `CacheConfig` ([CacheConfig](src/main/java/com/yixihan/template/config/cache/CacheConfig.java)): 缓存参数配置, Spring Cache 的配置, 定义了参数缓存信息, 包含 cache key, cache 过期时间
+- `CacheManageConfig` ([CacheManageConfig](src/main/java/com/yixihan/template/config/cache/CacheManageConfig.java)): 缓存管理配置, Spring Cache 的配置, 自定义了 Redis key 的过期时间逻辑
+- `RedisConfig` ([RedisConfig](src/main/java/com/yixihan/template/config/cache/RedisConfig.java)): Redis 缓存序列化配置, 自定义了 Redis 的序列化方式
+- `OsClientConfig` ([OsClientConfig](src/main/java/com/yixihan/template/config/os/OsClientConfig.java)): 对象存储 Client 配置, 实现了几个常用对象存储云服务商的 OSClient 简单自动注入
+- `CodeConfig` ([CodeConfig](src/main/java/com/yixihan/template/config/third/CodeConfig.java)): 验证码配置
+- `EmailConfig` ([EmailConfig](src/main/java/com/yixihan/template/config/third/EmailConfig.java)): 邮箱配置
+- `OsConfig` ([OsConfig](src/main/java/com/yixihan/template/config/third/OsConfig.java)): 对象存储配置
+- `SmsConfig` ([SmsConfig](src/main/java/com/yixihan/template/config/third/SmsConfig.java)): 短信配置
+- `CorsConfig` ([CorsConfig](src/main/java/com/yixihan/template/config/CorsConfig.java)): 跨域配置
+- `DatasourceConfig` ([DatasourceConfig](src/main/java/com/yixihan/template/config/DatasourceConfig.java)): 数据库连接池配置, 使用 `HikariDataSource`
+- `MybatisPlusConfig` ([MybatisPlusConfig](src/main/java/com/yixihan/template/config/MybatisPlusConfig.java)): MybatisPlus 插件配置
+- `MyMetaObjectHandler` ([MyMetaObjectHandler](src/main/java/com/yixihan/template/config/MyMetaObjectHandler.java)): MybatisPlus 自动注入配置, `createDate` 和 `updateDate` 的默认值插入
+- `SpringDocConfig` ([SpringDocConfig](src/main/java/com/yixihan/template/config/SpringDocConfig.java)): SpringDoc 配置, 类似于 Swagger 的配置, 用于配置 Api doc 的基础信息

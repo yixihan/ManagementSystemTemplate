@@ -44,10 +44,20 @@ public class FileUtil extends cn.hutool.core.io.FileUtil {
         }
     }
 
+    /**
+     * 文件解码 - file data to Base 64 data
+     * @param file file
+     * @return Base 64 data
+     */
     public static String encodeFileData(File file) {
         return Base64.encode(getInputStream(file));
     }
 
+    /**
+     * 文件解码 - file data to Base 64 data
+     * @param file multipart file
+     * @return Base 64 data
+     */
     public static String encodeFileData(MultipartFile file) {
         try {
             return Base64.encode(file.getInputStream());
@@ -56,14 +66,29 @@ public class FileUtil extends cn.hutool.core.io.FileUtil {
         }
     }
 
+    /**
+     * 文件解码 - Base 64 data to byte arr
+     * @param encode Base 64 data
+     * @return Base 64 data
+     */
     public static byte[] decodeFileData(String encode) {
         return Base64.decode(encode);
     }
 
+    /**
+     * 文件解码 - file data to byte arr
+     * @param file multipart file
+     * @return base 64 data
+     */
     public static byte[] decodeFileData(File file) {
         return decodeFileData(readFile(file));
     }
 
+    /**
+     * 读取文件内容
+     * @param file file
+     * @return file data
+     */
     public static String readFile(File file) {
         StringBuilder contentBuilder = new StringBuilder();
         try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
