@@ -1,0 +1,39 @@
+# docker compose for win(docker desktop)
+version: '3'
+services:
+  mysql:
+    image: mysql:8.0.36
+    container_name: management-mysql
+    restart: always
+    user: "root"
+    environment:
+      - "MYSQL_ROOT_PASSWORD=123456"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - /d/data/management/mysql/conf/my.cnf:/etc/mysql/my.cnf
+      - /d/data/management/mysql/logs:/logs
+      - /d/data/management/mysql/data:/var/lib/mysql
+    ports:
+      - "3306:3306"
+    networks:
+      - management-net
+
+  redis:
+    image: redis:6.2.5
+    container_name: management-redis
+    restart: always
+    volumes:
+      - /d/data/management/redis/data:/data
+      - /d/data/management/redis/conf/redis.conf:/etc/redis/redis.conf
+      - /d/data/management/redis/logs:/logs
+    ports:
+      - "6379:6379"
+    command: ["redis-server", "/etc/redis/redis.conf"]
+    networks:
+      - management-net
+
+networks:
+  management-net:

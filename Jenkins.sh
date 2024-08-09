@@ -57,6 +57,6 @@ docker build -t $IMAGE_NAME:$TAG .
 # 启动容器
 echo ""=============启动容器$IMAGE_NAME"============="
 # docker 容器启动命令
-docker run -p 18998:18998 -d --restart=on-failure:3 --name $IMAGE_NAME $IMAGE_NAME:$TAG
+docker run -p 18080:18080 -d --restart=always --name $IMAGE_NAME $IMAGE_NAME:$TAG
 echo "启动服务成功"
 ###########################################################################
