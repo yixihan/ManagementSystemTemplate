@@ -40,39 +40,39 @@ public class JobRunner {
     /**
      * 运行 job
      *
-     * @param jobInterface job
+     * @param job job
      */
     @Transactional(isolation = REPEATABLE_READ, rollbackFor = Exception.class)
-    public void runJob(JobInterface jobInterface) {
-        runJob(jobInterface, null);
+    public void runJob(Job job) {
+        runJob(job, null);
     }
 
     /**
      * 运行 job
      *
-     * @param jobInterface job
+     * @param job job
      * @param param        job 运行参数
      */
     @Transactional(isolation = REPEATABLE_READ, rollbackFor = Throwable.class)
-    public void runJob(JobInterface jobInterface, JobParam param) {
+    public void runJob(Job job, JobParam param) {
         JobInfo jobInfo;
         JobHis jobHis;
 
         try {
             // 获取 jobInfo & 初始化 jobHis
-            jobInfo = getJob(jobInterface);
+            jobInfo = getJob(job);
             if (CommonStatusEnums.INVALID.name().equals(jobInfo.getJobStatus())) {
-                log.info("job[{}] is invalid, jump over", jobInterface.jobName());
+                log.info("job[{}] is invalid, jump over", job.jobName());
                 return;
             }
             jobHis = initJobHis(jobInfo, param);
         } catch (Throwable e) {
-            log.error("jobInfo[{}] init err, msg: {}", jobInterface.jobName(), e.getMessage());
+            log.error("jobInfo[{}] init err, msg: {}", job.jobName(), e.getMessage());
             return;
         }
 
         try {
-            log.info("jobInfo[{}] start run", jobInterface.jobName());
+            log.info("jobInfo[{}] start run", job.jobName());
             Date startDate = new Date();
             jobInfo.setLastExecuteDate(startDate);
             jobHis.setStartDate(startDate);
@@ -81,7 +81,7 @@ public class JobRunner {
             jobInfoService.updateById(jobInfo);
 
             // 执行 job
-            jobInterface.run(param);
+            job.run(param);
 
             // jobInfo 执行成功
             Date finishDate = new Date();
@@ -90,7 +90,7 @@ public class JobRunner {
             jobHisService.updateById(jobHis);
             log.info("job[{}] run success, cost time: {} ms", jobInfo.getJobName(), DateUtil.between(startDate, finishDate, DateUnit.MS));
         } catch (Throwable e) {
-            log.error("job[{}] run err, msg: {}", jobInterface.jobName(), e.getMessage());
+            log.error("job[{}] run err, msg: {}", job.jobName(), e.getMessage());
 
             // 保存错误信息
             jobHis.setJobStatus(JobStatusEnums.FAILED.name());
@@ -103,17 +103,17 @@ public class JobRunner {
     /**
      * 从数据库中获取 job 信息, 若获取不到, 则新增
      *
-     * @param jobInterface job
+     * @param job job
      * @return {@link JobInfo}
      */
-    private JobInfo getJob(JobInterface jobInterface) {
-        JobInfo jobInfo = jobInfoService.getJobByJobCode(jobInterface.jobCode());
+    private JobInfo getJob(Job job) {
+        JobInfo jobInfo = jobInfoService.getJobByJobCode(job.jobCode());
         if (ObjUtil.isNull(jobInfo)) {
             jobInfo = new JobInfo();
-            jobInfo.setJobCode(jobInterface.jobCode());
-            jobInfo.setJobName(jobInterface.jobName());
-            jobInfo.setJobDesc(jobInterface.jobDescription());
-            jobInfo.setJobSchedule(jobInterface.jobSchedule());
+            jobInfo.setJobCode(job.jobCode());
+            jobInfo.setJobName(job.jobName());
+            jobInfo.setJobDesc(job.jobDescription());
+            jobInfo.setJobSchedule(job.jobSchedule());
             jobInfo.setJobStatus(CommonStatusEnums.VALID.name());
             jobInfoService.save(jobInfo);
         }

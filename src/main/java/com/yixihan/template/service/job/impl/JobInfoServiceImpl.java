@@ -6,7 +6,7 @@ import cn.hutool.core.util.StrUtil;
 import cn.hutool.extra.spring.SpringUtil;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.yixihan.template.common.enums.CommonStatusEnums;
-import com.yixihan.template.job.JobInterface;
+import com.yixihan.template.job.Job;
 import com.yixihan.template.job.JobRunner;
 import com.yixihan.template.model.job.JobInfo;
 import com.yixihan.template.mapper.job.JobInfoMapper;
@@ -44,7 +44,7 @@ public class JobInfoServiceImpl extends ServiceImpl<JobInfoMapper, JobInfo> impl
     @Resource
     private JobHisService jobHisService;
 
-    static Map<String, JobInterface> jobInterfaceMap;
+    static Map<String, Job> jobInterfaceMap;
 
     @Override
     public JobInfo getJobByJobCode(String jobCode) {
@@ -69,17 +69,17 @@ public class JobInfoServiceImpl extends ServiceImpl<JobInfoMapper, JobInfo> impl
     @Override
     public void triggerJob(JobParam param) {
         initJobInterfaceList();
-        JobInterface jobInterface = jobInterfaceMap.get(param.getJobCode());
+        Job job = jobInterfaceMap.get(param.getJobCode());
         JobInfo jobInfo = getJobByJobCode(param.getJobCode());
 
-        if (ObjUtil.isNull(jobInterface)) {
+        if (ObjUtil.isNull(job)) {
             Panic.noSuchJob();
         }
         if (CommonStatusEnums.INVALID.name().equals(jobInfo.getJobStatus())) {
             Panic.invalidStatus(param.getJobCode());
         }
 
-        SpringUtil.getBean(JobRunner.class).runJob(jobInterface, param);
+        SpringUtil.getBean(JobRunner.class).runJob(job, param);
     }
 
     @Override
@@ -118,7 +118,7 @@ public class JobInfoServiceImpl extends ServiceImpl<JobInfoMapper, JobInfo> impl
             synchronized (JobInfoServiceImpl.class) {
                 if (CollUtil.isEmpty(jobInterfaceMap)) {
                     jobInterfaceMap = new HashMap<>();
-                    for (Map.Entry<String, JobInterface> entry : SpringUtil.getBeansOfType(JobInterface.class).entrySet()) {
+                    for (Map.Entry<String, Job> entry : SpringUtil.getBeansOfType(Job.class).entrySet()) {
                         jobInterfaceMap.put(entry.getValue().jobCode(), entry.getValue());
                     }
                 }

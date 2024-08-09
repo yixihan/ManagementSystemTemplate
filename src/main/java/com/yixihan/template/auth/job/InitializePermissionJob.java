@@ -2,7 +2,7 @@ package com.yixihan.template.auth.job;
 
 import com.yixihan.template.auth.enums.PermissionEnums;
 import com.yixihan.template.common.enums.CommonStatusEnums;
-import com.yixihan.template.job.JobInterface;
+import com.yixihan.template.job.Job;
 import com.yixihan.template.job.JobRunner;
 import com.yixihan.template.model.user.Permission;
 import com.yixihan.template.service.user.PermissionService;
@@ -26,7 +26,7 @@ import java.util.stream.Collectors;
  */
 @Slf4j
 @Component
-public class InitializePermissionJob implements JobInterface {
+public class InitializePermissionJob implements Job {
 
     @Resource
     private PermissionService service;
@@ -51,7 +51,7 @@ public class InitializePermissionJob implements JobInterface {
 
     @Override
     public String jobSchedule() {
-        return "Adhoc";
+        return "Manually";
     }
 
     @Override
