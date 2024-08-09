@@ -34,4 +34,7 @@ public class UserRegisterReq {
 
     @Schema(description = "注册方式")
     private String type;
+
+    @Schema(description = "图片验证码 uuid")
+    private String Uuid;
 }

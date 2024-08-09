@@ -1,7 +1,7 @@
 package com.yixihan.template.controller.user;
 
-import com.yixihan.template.auth.annotation.HasAnyPermission;
-import com.yixihan.template.auth.service.AuthService;
+import com.yixihan.template.common.annotation.HasAnyPermission;
+import com.yixihan.template.service.auth.AuthService;
 import com.yixihan.template.controller.BaseController;
 import com.yixihan.template.service.user.RegisterService;
 import com.yixihan.template.vo.req.user.UserLoginReq;
@@ -44,7 +44,7 @@ public class AuthController extends BaseController {
     @HasAnyPermission(allowAnonymousUser = true)
     @PostMapping(value = "/register", produces = APPLICATION_JSON_VALUE)
     public ApiResp<Void> registerByMobile(@RequestBody UserRegisterReq req) {
-        return run(registerService::register, req);
+        return run(registerService::register, req, false);
     }
 
     @Operation(summary = "重置密码")

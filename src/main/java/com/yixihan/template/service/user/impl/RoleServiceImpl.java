@@ -5,7 +5,7 @@ import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.ObjUtil;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.yixihan.template.auth.enums.RoleEnums;
+import com.yixihan.template.common.enums.RoleEnums;
 import com.yixihan.template.common.enums.CommonStatusEnums;
 import com.yixihan.template.common.util.Panic;
 import com.yixihan.template.model.user.Role;

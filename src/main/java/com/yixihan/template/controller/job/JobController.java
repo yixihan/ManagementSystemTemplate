@@ -1,8 +1,8 @@
 package com.yixihan.template.controller.job;
 
 
-import com.yixihan.template.auth.annotation.HasAnyPermission;
-import com.yixihan.template.auth.enums.PermissionEnums;
+import com.yixihan.template.common.annotation.HasAnyPermission;
+import com.yixihan.template.common.enums.PermissionEnums;
 import com.yixihan.template.controller.BaseController;
 import com.yixihan.template.model.job.JobInfo;
 import com.yixihan.template.model.job.JobHis;

@@ -52,12 +52,12 @@ public class RegisterServiceImpl implements RegisterService {
      * @param req 请求参数
      */
     @Transactional(rollbackFor = BizException.class)
-    public void register(UserRegisterReq req) {
+    public void register(UserRegisterReq req, boolean autoRegisterFlag) {
         Assert.isEnum(req.getType(), AuthTypeEnums.class);
         switch (AuthTypeEnums.valueOf(req.getType())) {
-            case PASSWORD -> registerByPassword(req);
-            case MOBILE -> registerByMobile(req);
-            case EMAIL -> registerByEmail(req);
+            case PASSWORD -> registerByPassword(req, autoRegisterFlag);
+            case MOBILE -> registerByMobile(req, autoRegisterFlag);
+            case EMAIL -> registerByEmail(req, autoRegisterFlag);
             default -> throw new BizException(ExceptionEnums.PARAMS_VALID_ERR);
         }
     }
@@ -65,17 +65,21 @@ public class RegisterServiceImpl implements RegisterService {
     /**
      * 注册用户 - 通过手机号
      *
-     * @param req 请求参数
+     * @param req              请求参数
+     * @param autoRegisterFlag 是否为自动注册
      */
-    private void registerByMobile(UserRegisterReq req) {
+    private void registerByMobile(UserRegisterReq req, boolean autoRegisterFlag) {
         Assert.isTrue(ValidationUtil.validateMobile(req.getMobile()));
         Assert.isFalse(userService.validateUserMobile(req.getMobile()));
         Assert.notBlank(req.getCode());
 
-        codeService.validateSms(CodeValidateReq.builder()
-                .mobile(req.getMobile())
-                .type(CodeTypeEnums.REGISTER.getType())
-                .code(req.getCode()).build());
+        // 验证码校验, 自动注册则不校验
+        if (!autoRegisterFlag) {
+            codeService.validateSms(CodeValidateReq.builder()
+                    .mobile(req.getMobile())
+                    .type(CodeTypeEnums.REGISTER.getType())
+                    .code(req.getCode()).build());
+        }
 
         registerComm(req);
     }
@@ -83,17 +87,21 @@ public class RegisterServiceImpl implements RegisterService {
     /**
      * 注册用户 - 通过邮箱
      *
-     * @param req 请求参数
+     * @param req              请求参数
+     * @param autoRegisterFlag 是否为自动注册
      */
-    private void registerByEmail(UserRegisterReq req) {
+    private void registerByEmail(UserRegisterReq req, boolean autoRegisterFlag) {
         Assert.isTrue(ValidationUtil.validateEmail(req.getEmail()));
         Assert.isFalse(userService.validateUserEmail(req.getEmail()));
         Assert.notBlank(req.getCode());
 
-        codeService.validateEmail(CodeValidateReq.builder()
-                .email(req.getEmail())
-                .type(CodeTypeEnums.REGISTER.getType())
-                .code(req.getCode()).build());
+        // 验证码校验, 自动注册则不校验
+        if (!autoRegisterFlag) {
+            codeService.validateEmail(CodeValidateReq.builder()
+                    .email(req.getEmail())
+                    .type(CodeTypeEnums.REGISTER.getType())
+                    .code(req.getCode()).build());
+        }
 
         registerComm(req);
     }
@@ -101,17 +109,17 @@ public class RegisterServiceImpl implements RegisterService {
     /**
      * 注册用户 - 通过密码
      *
-     * @param req 请求参数
+     * @param req              请求参数
+     * @param autoRegisterFlag 是否为自动注册
      */
-    private void registerByPassword(UserRegisterReq req) {
-        if (StrUtil.isNotBlank(req.getEmail())) {
-            Assert.isTrue(ValidationUtil.validateEmail(req.getEmail()));
-        }
-        if (StrUtil.isNotBlank(req.getMobile())) {
-            Assert.isTrue(ValidationUtil.validateMobile(req.getMobile()));
-        }
+    private void registerByPassword(UserRegisterReq req, boolean autoRegisterFlag) {
         Assert.isTrue(ValidationUtil.validateUserName(req.getUserName()));
         Assert.isTrue(ValidationUtil.validatePassword(req.getPassword()));
+
+        // 验证码校验, 自动注册则不校验
+        if (!autoRegisterFlag) {
+            codeService.validate(req.getUuid(), req.getCode());
+        }
 
         registerComm(req);
     }
@@ -131,7 +139,9 @@ public class RegisterServiceImpl implements RegisterService {
         if (StrUtil.isBlank(user.getUserName())) {
             user.setUserName(StrUtil.format("用户_{}", RandomUtil.randomNumbers(NumberConstant.NUM_10)));
         }
-        user.setUserPassword(RandomUtil.randomString(NumberConstant.NUM_10));
+        if (StrUtil.isBlank(user.getUserPassword())) {
+            user.setUserPassword(RandomUtil.randomString(NumberConstant.NUM_10));
+        }
 
         // 密码加密
         String salt = RandomUtil.randomString(NumberConstant.NUM_10);

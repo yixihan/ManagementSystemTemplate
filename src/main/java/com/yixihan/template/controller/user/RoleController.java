@@ -1,8 +1,8 @@
 package com.yixihan.template.controller.user;
 
 
-import com.yixihan.template.auth.annotation.HasAnyPermission;
-import com.yixihan.template.auth.enums.PermissionEnums;
+import com.yixihan.template.common.annotation.HasAnyPermission;
+import com.yixihan.template.common.enums.PermissionEnums;
 import com.yixihan.template.controller.BaseController;
 import com.yixihan.template.service.user.RoleService;
 import com.yixihan.template.vo.req.user.RoleModifyReq;

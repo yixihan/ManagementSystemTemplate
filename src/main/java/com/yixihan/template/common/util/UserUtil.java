@@ -1,7 +1,7 @@
 package com.yixihan.template.common.util;
 
 import cn.hutool.extra.spring.SpringUtil;
-import com.yixihan.template.auth.service.AuthService;
+import com.yixihan.template.service.auth.AuthService;
 import com.yixihan.template.vo.resp.user.AuthVO;
 import com.yixihan.template.vo.resp.user.PermissionVO;
 import com.yixihan.template.vo.resp.user.RoleVO;

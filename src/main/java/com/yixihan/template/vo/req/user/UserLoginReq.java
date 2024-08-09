@@ -46,4 +46,7 @@ public class UserLoginReq implements Serializable {
 
     @Schema(description = "用户验证码")
     private String validateCode;
+
+    @Schema(description = "是否自动注册")
+    private Boolean autoRegisterFlag;
 }

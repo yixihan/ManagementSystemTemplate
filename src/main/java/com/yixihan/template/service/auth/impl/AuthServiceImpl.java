@@ -1,13 +1,12 @@
-package com.yixihan.template.auth.service;
+package com.yixihan.template.service.auth.impl;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.ArrayUtil;
 import cn.hutool.core.util.ObjUtil;
 import cn.hutool.core.util.StrUtil;
-import com.yixihan.template.auth.annotation.HasAnyPermission;
-import com.yixihan.template.auth.cache.AuthCacheService;
-import com.yixihan.template.auth.constant.AuthConstant;
-import com.yixihan.template.auth.enums.PermissionEnums;
+import com.yixihan.template.common.annotation.HasAnyPermission;
+import com.yixihan.template.common.constant.AuthConstant;
+import com.yixihan.template.common.enums.PermissionEnums;
 import com.yixihan.template.common.enums.CodeTypeEnums;
 import com.yixihan.template.common.enums.ExceptionEnums;
 import com.yixihan.template.common.enums.AuthTypeEnums;
@@ -15,11 +14,15 @@ import com.yixihan.template.common.exception.AuthException;
 import com.yixihan.template.common.exception.BizException;
 import com.yixihan.template.common.util.*;
 import com.yixihan.template.model.user.User;
+import com.yixihan.template.service.auth.AuthCacheService;
+import com.yixihan.template.service.auth.AuthService;
 import com.yixihan.template.service.third.CodeService;
+import com.yixihan.template.service.user.RegisterService;
 import com.yixihan.template.service.user.RoleService;
 import com.yixihan.template.service.user.UserService;
 import com.yixihan.template.vo.req.third.CodeValidateReq;
 import com.yixihan.template.vo.req.user.UserLoginReq;
+import com.yixihan.template.vo.req.user.UserRegisterReq;
 import com.yixihan.template.vo.req.user.UserResetPwdReq;
 import com.yixihan.template.vo.resp.user.AuthVO;
 import com.yixihan.template.vo.resp.user.PermissionVO;
@@ -40,14 +43,14 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 /**
- * 认证服务
+ * 认证服务 实现类
  *
  * @author yixihan
  * @date 2024-05-23 11:24
  */
 @Slf4j
 @Service
-public class AuthService {
+public class AuthServiceImpl implements AuthService {
 
     @Resource
     private UserService userService;
@@ -62,8 +65,12 @@ public class AuthService {
     private CodeService codeService;
 
     @Resource
+    private RegisterService registerService;
+
+    @Resource
     private HttpServletRequest request;
 
+    @Override
     public AuthVO authentication(String token) {
         // 从 token 种获取 userId
         Long userId = JwtUtil.analysis(token, AuthConstant.USER_ID, Long.class);
@@ -99,7 +106,8 @@ public class AuthService {
      * @param req 请求参数
      * @return {@link AuthVO}
      */
-    @Transactional(readOnly = true)
+    @Override
+    @Transactional(rollbackFor = Exception.class)
     public AuthVO login(UserLoginReq req) {
         Assert.isEnum(req.getLoginType(), AuthTypeEnums.class);
         switch (AuthTypeEnums.valueOf(req.getLoginType())) {
@@ -115,7 +123,7 @@ public class AuthService {
             case TOKEN -> {
                 return loginByToken(req);
             }
-            default -> throw new AuthException("unknown login in type");
+            default -> throw new AuthException(ExceptionEnums.UNKOWN_AUTH_TYPE_ERR);
         }
     }
 
@@ -133,12 +141,27 @@ public class AuthService {
 
         // 验证码校验
         codeService.validate(req.getUuid(), req.getValidateCode());
+        User user;
+        try {
+            // 获取用户信息
+            user = userService.getUserByName(req.getUserName());
+        } catch (Exception e) {
+            // 获取用户信息失败, 表明是未注册用户
+            if (!req.getAutoRegisterFlag()) {
+                throw e;
+            } else {
+                // 注册
+                autoRegisterUser(req);
 
-        // 获取用户信息
-        User user = userService.getUserByName(req.getUserName());
+                // 获取注册用户
+                user = userService.getUserByName(req.getUserName());
+            }
+        }
 
         return loginComm(req, user);
     }
+
+
 
     /**
      * 登录 - 通过邮箱登录
@@ -158,8 +181,22 @@ public class AuthService {
                 .code(req.getValidateCode())
                 .build());
 
-        // 获取用户信息
-        User user = userService.getUserByEmail(req.getUserEmail());
+        User user;
+        try {
+            // 获取用户信息
+            user = userService.getUserByEmail(req.getUserEmail());
+        } catch (Exception e) {
+            // 获取用户信息失败, 表明是未注册用户
+            if (!req.getAutoRegisterFlag()) {
+                throw e;
+            } else {
+                // 注册
+                autoRegisterUser(req);
+
+                // 获取注册用户
+                user = userService.getUserByEmail(req.getUserEmail());
+            }
+        }
 
         return loginComm(req, user);
     }
@@ -182,8 +219,22 @@ public class AuthService {
                 .code(req.getValidateCode())
                 .build());
 
-        // 获取用户信息
-        User user = userService.getUserByMobile(req.getUserMobile());
+        User user;
+        try {
+            // 获取用户信息
+            user = userService.getUserByMobile(req.getUserMobile());
+        } catch (Exception e) {
+            // 获取用户信息失败, 表明是未注册用户
+            if (!req.getAutoRegisterFlag()) {
+                throw e;
+            } else {
+                // 注册
+                autoRegisterUser(req);
+
+                // 获取注册用户
+                user = userService.getUserByMobile(req.getUserMobile());
+            }
+        }
 
         return loginComm(req, user);
     }
@@ -206,7 +257,7 @@ public class AuthService {
 
         // 新 token 生成后, 注销老 token
         if (ObjUtil.isNotNull(authVO)) {
-            cacheService.putLogoutToken(req.getToken());
+            cacheService.del(req.getToken());
         }
         return authVO;
     }
@@ -240,10 +291,25 @@ public class AuthService {
     }
 
     /**
+     * 自动注册
+     * @param req user login req
+     */
+    private void autoRegisterUser(UserLoginReq req) {
+        UserRegisterReq registerReq = new UserRegisterReq();
+        registerReq.setUserName(req.getUserName());
+        registerReq.setMobile(req.getUserMobile());
+        registerReq.setEmail(req.getUserEmail());
+        registerReq.setPassword(req.getPassword());
+        registerReq.setType(req.getLoginType());
+        registerService.register(registerReq, true);
+    }
+
+    /**
      * 重置密码
      *
      * @param req 请求参数
      */
+    @Override
     @Transactional(rollbackFor = BizException.class)
     public void resetPassword(UserResetPwdReq req) {
         Assert.isEnum(req.getType(), AuthTypeEnums.class);
@@ -317,11 +383,10 @@ public class AuthService {
         userService.updateById(user);
     }
 
+    @Override
     public void logout() {
         String token = request.getHeader(AuthConstant.JWT_TOKEN);
         cacheService.del(token);
-
-        cacheService.putLogoutToken(token);
     }
 
     /**
@@ -329,6 +394,7 @@ public class AuthService {
      *
      * @return {@link AuthVO}
      */
+    @Override
     public AuthVO getLoginUser() {
         AuthVO loginUser = AppContext.getInstance().getLoginUser();
         if (ObjUtil.isNotNull(loginUser)) {
@@ -339,10 +405,12 @@ public class AuthService {
         return cacheService.get(token);
     }
 
+    @Override
     public List<RoleVO> getLoginUserRole() {
         return getLoginUser().getRoleList();
     }
 
+    @Override
     public List<PermissionVO> getLoginUserPermission() {
         Set<PermissionVO> permissionSet = new HashSet<>();
         for (RoleVO role : getLoginUserRole()) {
@@ -362,6 +430,7 @@ public class AuthService {
      *
      * @param joinPoint joinPoint
      */
+    @Override
     public Object hasAnyAuthorityCheck(ProceedingJoinPoint joinPoint) {
         if (ObjUtil.isNull(joinPoint)) {
             return null;
@@ -385,7 +454,7 @@ public class AuthService {
             if (StrUtil.isBlank(token)) {
                 Panic.noAuth(ExceptionEnums.TOKEN_EXPIRED);
             }
-            if (cacheService.containsLogoutToken(token)) {
+            if (!cacheService.contains(token)) {
                 Panic.noAuth(ExceptionEnums.TOKEN_EXPIRED);
             }
             if (ObjUtil.isNull(authentication(token))) {

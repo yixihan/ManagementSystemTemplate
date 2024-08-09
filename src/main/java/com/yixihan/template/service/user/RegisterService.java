@@ -14,6 +14,7 @@ public interface RegisterService {
      * 用户注册
      *
      * @param req 请求参数
+     * @param autoRegisterFlag 是否为自动注册
      */
-    void register(UserRegisterReq req);
+    void register(UserRegisterReq req, boolean autoRegisterFlag);
 }

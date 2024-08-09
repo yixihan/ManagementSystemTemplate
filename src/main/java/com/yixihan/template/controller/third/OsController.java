@@ -1,6 +1,6 @@
 package com.yixihan.template.controller.third;
 
-import com.yixihan.template.auth.annotation.HasAnyPermission;
+import com.yixihan.template.common.annotation.HasAnyPermission;
 import com.yixihan.template.controller.BaseController;
 import com.yixihan.template.model.third.ObjectStorage;
 import com.yixihan.template.service.third.ObjectStorageService;

@@ -1,4 +1,4 @@
-package com.yixihan.template.auth.enums;
+package com.yixihan.template.common.enums;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

@@ -1,9 +1,7 @@
-package com.yixihan.template.auth.job;
+package com.yixihan.template.job;
 
-import com.yixihan.template.auth.enums.PermissionEnums;
+import com.yixihan.template.common.enums.PermissionEnums;
 import com.yixihan.template.common.enums.CommonStatusEnums;
-import com.yixihan.template.job.Job;
-import com.yixihan.template.job.JobRunner;
 import com.yixihan.template.model.user.Permission;
 import com.yixihan.template.service.user.PermissionService;
 import com.yixihan.template.vo.req.job.JobParam;

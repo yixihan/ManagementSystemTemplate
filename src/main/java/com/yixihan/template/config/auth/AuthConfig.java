@@ -1,4 +1,4 @@
-package com.yixihan.template.auth.config;
+package com.yixihan.template.config.auth;
 
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;

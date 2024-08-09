@@ -1,6 +1,6 @@
-package com.yixihan.template.auth.annotation;
+package com.yixihan.template.common.annotation;
 
-import com.yixihan.template.auth.enums.PermissionEnums;
+import com.yixihan.template.common.enums.PermissionEnums;
 
 import java.lang.annotation.*;
 

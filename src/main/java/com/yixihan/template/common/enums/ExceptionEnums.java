@@ -65,6 +65,7 @@ public enum ExceptionEnums {
     PASSWORD_ERR(20007, "密码错误"),
     CODE_EXPIRE_ERR(20008, "验证码过期"),
     CODE_VALIDATE_ERROR(20009, "验证码校验错误"),
+    UNKOWN_AUTH_TYPE_ERR(20010, "未知的登录方式"),
     
     // ====================== Third Exception ======================
     PICTURE_CODE_ERR(30001, "图片验证码生成异常"),
