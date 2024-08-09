@@ -11,10 +11,7 @@ import com.yixihan.template.service.third.ObjectStorageService;
 import com.yixihan.template.util.Assert;
 import com.yixihan.template.util.FileUtil;
 import com.yixihan.template.util.UserUtil;
-import com.yixihan.template.util.builder.KodoBuilder;
-import com.yixihan.template.util.builder.LocalOsBuilder;
-import com.yixihan.template.util.builder.OssBuilder;
-import com.yixihan.template.util.builder.SmmsBuilder;
+import com.yixihan.template.util.builder.*;
 import com.yixihan.template.vo.req.third.OsCertificateReq;
 import com.yixihan.template.vo.req.third.OsUploadReq;
 import jakarta.annotation.Resource;
@@ -22,6 +19,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.net.URL;
 
 /**
  * <p>
@@ -60,7 +59,9 @@ public class ObjectStorageServiceImpl extends ServiceImpl<ObjectStorageMapper, O
                 os.setMetadata(JSONUtil.toJsonStr(certificate));
             }
             case COS -> {
-                // todo
+                Object certificate = CosBuilder.build()
+                        .certificate()
+                        .done();
                 os.setMetadata(StrUtil.EMPTY_JSON);
             }
             default -> throw new BizException(StrUtil.format("{} 不支持凭证上传", osConfig.getType().getDesc()));

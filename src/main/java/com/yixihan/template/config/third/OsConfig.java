@@ -29,6 +29,8 @@ public class OsConfig implements InitializingBean {
 
     private String bucketName;
 
+    private String region;
+
     private String host;
 
     private String token;
@@ -63,7 +65,7 @@ public class OsConfig implements InitializingBean {
         } else if (cos()) {
             log.info("COS accessKey: {}", accessKey);
             log.info("COS secretKey: {}", secretKey);
-            log.info("COS endpoint: {}", endpoint);
+            log.info("COS region: {}", region);
             log.info("COS host: {}", host);
             log.info("COS bucketName: {}", bucketName);
         } else if (db()) {

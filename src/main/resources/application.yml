@@ -178,9 +178,9 @@ third:
   # 对象存储配置
   os:
     type: ${app.third.os.type}
+    # Common 配置
     access-key: ${app.third.os.access-key}
     secret-key: ${app.third.os.secret-key}
-    endpoint: ${app.third.os.endpoint}
     bucket-name: ${app.third.os.bucket-name}
     host: ${app.third.os.host}
     # SM.MS 配置 配置了 token 就不用配置 username 和 password
@@ -189,3 +189,7 @@ third:
     password: ${app.third.os.password}
     # Local path
     local-path: ${app.third.os.local-path}
+    # COS 配置
+    region: ${app.third.os.region}
+    # OSS 配置, 配置参考 https://cloud.tencent.com/document/product/436/6224
+    endpoint: ${app.third.os.endpoint}

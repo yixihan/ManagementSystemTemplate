@@ -8,6 +8,7 @@ import com.aliyun.oss.OSSClientBuilder;
 import com.aliyun.oss.common.utils.BinaryUtil;
 import com.aliyun.oss.model.*;
 import com.yixihan.template.config.third.OsConfig;
+import com.yixihan.template.exception.BizException;
 import com.yixihan.template.exception.InvalidParameterException;
 import com.yixihan.template.util.Assert;
 import lombok.extern.slf4j.Slf4j;
@@ -232,8 +233,9 @@ public class OssBuilder {
             } else if (ObjUtil.isNotEmpty(str)) {
                 data = uploadStr(ossClient, config);
             }
-        } catch (Exception oe) {
-            log.error("OSS 文件上传出错: {}", oe.getMessage());
+        } catch (Exception e) {
+            log.error("OSS 文件上传出错: {}", e.getMessage());
+            throw new BizException(e);
         } finally {
             if (ossClient != null) {
                 ossClient.shutdown();

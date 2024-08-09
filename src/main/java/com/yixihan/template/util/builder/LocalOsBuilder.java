@@ -12,11 +12,12 @@ import java.io.File;
 import java.nio.charset.StandardCharsets;
 
 /**
- * description
+ * 本地存储 builder
  *
  * @author yixihan
  * @date 2024-06-07 13:37
  */
+@SuppressWarnings("unused")
 @Slf4j
 public class LocalOsBuilder {
 
