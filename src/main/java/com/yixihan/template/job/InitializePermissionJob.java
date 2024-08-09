@@ -34,7 +34,7 @@ public class InitializePermissionJob implements Job {
 
     @Override
     public String jobCode() {
-        return "Initialize_Permission_Code";
+        return "INITIALIZE_PERMISSION_CODE";
     }
 
     @Override

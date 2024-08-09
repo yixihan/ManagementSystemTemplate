@@ -50,8 +50,8 @@ public class JobRunner {
     /**
      * 运行 job
      *
-     * @param job job
-     * @param param        job 运行参数
+     * @param job   job
+     * @param param job 运行参数
      */
     @Transactional(isolation = REPEATABLE_READ, rollbackFor = Throwable.class)
     public void runJob(Job job, JobParam param) {
@@ -60,7 +60,7 @@ public class JobRunner {
 
         try {
             // 获取 jobInfo & 初始化 jobHis
-            jobInfo = getJob(job);
+            jobInfo = getJobInfo(job);
             if (CommonStatusEnums.INVALID.name().equals(jobInfo.getJobStatus())) {
                 log.info("job[{}] is invalid, jump over", job.jobName());
                 return;
@@ -106,7 +106,7 @@ public class JobRunner {
      * @param job job
      * @return {@link JobInfo}
      */
-    private JobInfo getJob(Job job) {
+    private JobInfo getJobInfo(Job job) {
         JobInfo jobInfo = jobInfoService.getJobByJobCode(job.jobCode());
         if (ObjUtil.isNull(jobInfo)) {
             jobInfo = new JobInfo();

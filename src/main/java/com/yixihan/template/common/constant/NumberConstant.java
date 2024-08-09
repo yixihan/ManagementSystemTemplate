@@ -32,6 +32,7 @@ public class NumberConstant {
     public static final Integer NUM_256 = 256;
     public static final Integer NUM_512 = 512;
     public static final Integer NUM_1024 = 1024;
+    public static final Integer NUM_10000 = 10000;
 
     public static final Integer NEG_NUM_0 = -0;
     public static final Integer NEG_NUM_1 = -1;

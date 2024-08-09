@@ -2,4 +2,22 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.yixihan.template.mapper.job.JobHisMapper">
 
+    <select id="getNeedCleanJobHis" resultType="java.lang.Long">
+        select job_his_id
+        from job_his
+        where job_id = #{jobId}
+        order by create_date
+        limit #{cnt}
+    </select>
+
+    <delete id="cleanJobHis">
+        delete from job_his
+        <where>
+            <if test="list != null and list.size() > 0">
+                <foreach collection="list" item="item" open="job_his_id in (" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+        </where>
+    </delete>
 </mapper>
