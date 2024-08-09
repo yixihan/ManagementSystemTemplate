@@ -73,7 +73,7 @@ public class PermissionServiceImpl extends ServiceImpl<PermissionMapper, Permiss
             return;
         }
         Long count = lambdaQuery()
-                .in(Permission::getId, permissionIdList)
+                .in(Permission::getPermissionId, permissionIdList)
                 .count();
 
         if (count == permissionIdList.size()) {
@@ -81,11 +81,11 @@ public class PermissionServiceImpl extends ServiceImpl<PermissionMapper, Permiss
         }
 
         Set<Long> permissionIdSet = lambdaQuery()
-                .select(Permission::getId)
-                .in(Permission::getId, permissionIdList)
+                .select(Permission::getPermissionId)
+                .in(Permission::getPermissionId, permissionIdList)
                 .list()
                 .stream()
-                .map(Permission::getId)
+                .map(Permission::getPermissionId)
                 .collect(Collectors.toSet());
 
         for (Long id : permissionIdList) {
@@ -143,7 +143,7 @@ public class PermissionServiceImpl extends ServiceImpl<PermissionMapper, Permiss
 
     private PermissionVO permissionToVO(Permission permission) {
         PermissionVO vo = new PermissionVO();
-        vo.setPermissionId(permission.getId());
+        vo.setPermissionId(permission.getPermissionId());
         vo.setPermissionCode(permission.getPermissionCode());
         vo.setPermissionName(permission.getPermissionName());
         vo.setStatus(permission.getStatus());

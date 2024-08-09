@@ -93,7 +93,7 @@ public class InitializeRoleJob implements JobInterface {
         }
         roleService.saveBatch(newRoleList);
         if (adminFlag) {
-            List<Long> permissionIdList = permissionService.list().stream().map(Permission::getId).toList();
+            List<Long> permissionIdList = permissionService.list().stream().map(Permission::getPermissionId).toList();
             Role admin = newRoleList.stream().filter(o -> RoleEnums.ADMIN.getRole().equals(o.getRoleCode())).findFirst().orElse(new Role());
             rolePermissionService.saveRolePermission(admin, permissionIdList);
         }

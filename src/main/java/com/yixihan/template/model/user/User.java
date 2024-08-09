@@ -2,6 +2,8 @@ package com.yixihan.template.model.user;
 
 import java.io.Serial;
 
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
 import com.yixihan.template.model.BaseModel;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
@@ -22,10 +24,15 @@ import lombok.experimental.Accessors;
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
 @Schema(description = "用户表")
+@SuppressWarnings("unused")
 public class User extends BaseModel {
 
     @Serial
     private static final long serialVersionUID = -8287720458629270352L;
+
+    @Schema(description = "主键 id")
+    @TableId(value = "user_id", type = IdType.AUTO)
+    private Long userId;
 
     @Schema(description = "用户名")
     private String userName;
@@ -42,7 +49,7 @@ public class User extends BaseModel {
     @Schema(description = "用户手机号")
     private String userMobile;
 
-    public static final String ID = "id";
+    public static final String USER_ID = "user_id";
 
     public static final String USER_NAME = "user_name";
 

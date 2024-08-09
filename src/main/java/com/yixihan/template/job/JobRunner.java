@@ -7,10 +7,10 @@ import cn.hutool.core.util.ObjUtil;
 import cn.hutool.json.JSONUtil;
 import com.yixihan.template.common.enums.CommonStatusEnums;
 import com.yixihan.template.common.enums.JobStatusEnums;
-import com.yixihan.template.model.job.Job;
+import com.yixihan.template.model.job.JobInfo;
 import com.yixihan.template.model.job.JobHis;
 import com.yixihan.template.service.job.JobHisService;
-import com.yixihan.template.service.job.JobService;
+import com.yixihan.template.service.job.JobInfoService;
 import com.yixihan.template.vo.req.job.JobParam;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
@@ -32,7 +32,7 @@ import static org.springframework.transaction.annotation.Isolation.REPEATABLE_RE
 public class JobRunner {
 
     @Resource
-    private JobService jobService;
+    private JobInfoService jobInfoService;
 
     @Resource
     private JobHisService jobHisService;
@@ -55,40 +55,40 @@ public class JobRunner {
      */
     @Transactional(isolation = REPEATABLE_READ, rollbackFor = Throwable.class)
     public void runJob(JobInterface jobInterface, JobParam param) {
-        Job job;
+        JobInfo jobInfo;
         JobHis jobHis;
 
         try {
-            // 获取 job & 初始化 jobHis
-            job = getJob(jobInterface);
-            if (CommonStatusEnums.INVALID.name().equals(job.getJobStatus())) {
+            // 获取 jobInfo & 初始化 jobHis
+            jobInfo = getJob(jobInterface);
+            if (CommonStatusEnums.INVALID.name().equals(jobInfo.getJobStatus())) {
                 log.info("job[{}] is invalid, jump over", jobInterface.jobName());
                 return;
             }
-            jobHis = initJobHis(job, param);
+            jobHis = initJobHis(jobInfo, param);
         } catch (Throwable e) {
-            log.error("job[{}] init err, msg: {}", jobInterface.jobName(), e.getMessage());
+            log.error("jobInfo[{}] init err, msg: {}", jobInterface.jobName(), e.getMessage());
             return;
         }
 
         try {
-            log.info("job[{}] start run", jobInterface.jobName());
+            log.info("jobInfo[{}] start run", jobInterface.jobName());
             Date startDate = new Date();
-            job.setLastExecuteDate(startDate);
+            jobInfo.setLastExecuteDate(startDate);
             jobHis.setStartDate(startDate);
-            // 更新 job & jobHis
+            // 更新 jobInfo & jobHis
             jobHisService.updateById(jobHis);
-            jobService.updateById(job);
+            jobInfoService.updateById(jobInfo);
 
             // 执行 job
             jobInterface.run(param);
 
-            // job 执行成功
+            // jobInfo 执行成功
             Date finishDate = new Date();
             jobHis.setJobStatus(JobStatusEnums.SUCCESS.name());
             jobHis.setFinishDate(finishDate);
             jobHisService.updateById(jobHis);
-            log.info("job[{}] run success, cost time: {} ms", job.getJobName(), DateUtil.between(startDate, finishDate, DateUnit.MS));
+            log.info("job[{}] run success, cost time: {} ms", jobInfo.getJobName(), DateUtil.between(startDate, finishDate, DateUnit.MS));
         } catch (Throwable e) {
             log.error("job[{}] run err, msg: {}", jobInterface.jobName(), e.getMessage());
 
@@ -104,35 +104,35 @@ public class JobRunner {
      * 从数据库中获取 job 信息, 若获取不到, 则新增
      *
      * @param jobInterface job
-     * @return {@link Job}
+     * @return {@link JobInfo}
      */
-    private Job getJob(JobInterface jobInterface) {
-        Job job = jobService.getJobByJobCode(jobInterface.jobCode());
-        if (ObjUtil.isNull(job)) {
-            job = new Job();
-            job.setJobCode(jobInterface.jobCode());
-            job.setJobName(jobInterface.jobName());
-            job.setJobDesc(jobInterface.jobDescription());
-            job.setJobSchedule(jobInterface.jobSchedule());
-            job.setJobStatus(CommonStatusEnums.VALID.name());
-            jobService.save(job);
+    private JobInfo getJob(JobInterface jobInterface) {
+        JobInfo jobInfo = jobInfoService.getJobByJobCode(jobInterface.jobCode());
+        if (ObjUtil.isNull(jobInfo)) {
+            jobInfo = new JobInfo();
+            jobInfo.setJobCode(jobInterface.jobCode());
+            jobInfo.setJobName(jobInterface.jobName());
+            jobInfo.setJobDesc(jobInterface.jobDescription());
+            jobInfo.setJobSchedule(jobInterface.jobSchedule());
+            jobInfo.setJobStatus(CommonStatusEnums.VALID.name());
+            jobInfoService.save(jobInfo);
         }
-        return job;
+        return jobInfo;
     }
 
     /**
      * 初始化 jobHis 信息
      *
-     * @param job   job 信息
-     * @param param job 运行参数
+     * @param jobInfo jobInfo 信息
+     * @param param   jobInfo 运行参数
      * @return {@link JobHis}
      */
-    private JobHis initJobHis(Job job, JobParam param) {
+    private JobHis initJobHis(JobInfo jobInfo, JobParam param) {
         JobHis jobHis = new JobHis();
-        jobHis.setJobId(job.getId());
-        jobHis.setJobCode(job.getJobCode());
-        jobHis.setJobName(job.getJobName());
-        jobHis.setJobDesc(job.getJobDesc());
+        jobHis.setJobId(jobInfo.getJobId());
+        jobHis.setJobCode(jobInfo.getJobCode());
+        jobHis.setJobName(jobInfo.getJobName());
+        jobHis.setJobDesc(jobInfo.getJobDesc());
         jobHis.setJobStatus(JobStatusEnums.PENDING.name());
         jobHis.setJobParam(JSONUtil.toJsonStr(param));
         jobHisService.save(jobHis);

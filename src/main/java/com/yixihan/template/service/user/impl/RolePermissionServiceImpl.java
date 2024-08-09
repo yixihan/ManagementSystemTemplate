@@ -26,12 +26,12 @@ public class RolePermissionServiceImpl extends ServiceImpl<RolePermissionMapper,
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void saveRolePermission(Role role, List<Long> permissionIdList) {
-        if (ObjUtil.isNotNull(role.getId())) {
+        if (ObjUtil.isNotNull(role.getRoleId())) {
             List<RolePermission> rolePermissionList = new ArrayList<>(permissionIdList.size());
             permissionIdList.forEach(permissionId -> {
                 RolePermission rolePermission = new RolePermission();
                 rolePermission.setPermissionId(permissionId);
-                rolePermission.setRoleId(role.getId());
+                rolePermission.setRoleId(role.getRoleId());
                 rolePermissionList.add(rolePermission);
             });
             saveBatch(rolePermissionList);

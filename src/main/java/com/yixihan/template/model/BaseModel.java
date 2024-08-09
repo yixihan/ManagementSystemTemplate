@@ -29,10 +29,6 @@ public class BaseModel implements Serializable {
     @Serial
     private static final long serialVersionUID = 3291058324355093826L;
 
-    @Schema(description = "主键 id")
-    @TableId(value = "id", type = IdType.AUTO)
-    private Long id;
-
     @Schema(description = "创建时间")
     @TableField(fill = FieldFill.INSERT)
     private Date createDate;

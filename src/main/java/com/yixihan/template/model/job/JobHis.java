@@ -2,6 +2,8 @@ package com.yixihan.template.model.job;
 
 import java.io.Serial;
 
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
 import com.yixihan.template.model.BaseModel;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
@@ -24,10 +26,15 @@ import java.util.Date;
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
 @Schema(description = "任务执行记录表")
+@SuppressWarnings("unused")
 public class JobHis extends BaseModel {
 
     @Serial
     private static final long serialVersionUID = -1711655616538944894L;
+
+    @Schema(description = "主键 id")
+    @TableId(value = "job_his_id", type = IdType.AUTO)
+    private Long jobHisId;
 
     @Schema(description = "任务 id")
     private Long jobId;
@@ -59,7 +66,7 @@ public class JobHis extends BaseModel {
     @Schema(description = "错误栈信息")
     private String errTrace;
 
-    public static final String ID = "id";
+    public static final String JOB_HIS_ID = "job_his_id";
 
     public static final String JOB_ID = "job_id";
 

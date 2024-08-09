@@ -2,6 +2,8 @@ package com.yixihan.template.model.user;
 
 import java.io.Serial;
 
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
 import com.yixihan.template.model.BaseModel;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
@@ -22,10 +24,15 @@ import lombok.experimental.Accessors;
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
 @Schema(description = "权限表")
+@SuppressWarnings("unused")
 public class Permission extends BaseModel {
 
     @Serial
     private static final long serialVersionUID = -2648980633635961328L;
+
+    @Schema(description = "主键 id")
+    @TableId(value = "permission_id", type = IdType.AUTO)
+    private Long permissionId;
 
     @Schema(description = "权限 code")
     private String permissionCode;
@@ -36,7 +43,7 @@ public class Permission extends BaseModel {
     @Schema(description = "状态[有效: VALID, 无效: INVALID]")
     private String status;
 
-    public static final String ID = "id";
+    public static final String PERMISSION_ID = "permission_id";
 
     public static final String PERMISSION_CODE = "permission_code";
 

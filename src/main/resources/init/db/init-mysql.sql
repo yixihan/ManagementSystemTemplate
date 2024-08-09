@@ -9,7 +9,7 @@ use `management_template`;
 drop table if exists `user`;
 create table if not exists `user`
 (
-    `id`            bigint(18) unsigned auto_increment comment '用户 id',
+    `user_id`            bigint(18) unsigned auto_increment comment '用户 id',
     `user_name`     varchar(50)      not null comment '用户名',
     `user_password` varchar(255)     not null comment '用户密码',
     `user_salt`     char(10)         not null comment '用户盐',
@@ -21,7 +21,7 @@ create table if not exists `user`
     `version`       int(11) unsigned not null default 1 comment '乐观锁',
     `del_flag`      tinyint(1)       not null default 0 comment '逻辑删除',
 
-    primary key (`id`),
+    primary key (`user_id`),
     index user_name_idx (`user_name`) using btree,
     index user_email_idx (`user_email`) using btree,
     index user_mobile_idx (`user_mobile`) using btree
@@ -31,7 +31,7 @@ create table if not exists `user`
 drop table if exists `role`;
 create table if not exists `role`
 (
-    `id`          bigint(18) unsigned auto_increment comment '角色 id',
+    `role_id`          bigint(18) unsigned auto_increment comment '角色 id',
     `role_code`   varchar(50)      not null comment '角色 code',
     `role_name`   varchar(50)      not null comment '角色名',
     `status`      varchar(10)      not null default 'VALID' comment '状态[有效: VALID, 无效: INVALID]',
@@ -40,7 +40,7 @@ create table if not exists `role`
     `version`     int(11) unsigned not null default 1 comment '乐观锁',
     `del_flag`    tinyint(1)       not null default 0 comment '逻辑删除',
 
-    primary key (`id`),
+    primary key (`role_id`),
     unique index role_code_idx (`role_code`) using btree,
     index role_name_idx (`role_name`) using btree,
     index role_status_idx (`status`) using btree
@@ -50,7 +50,7 @@ create table if not exists `role`
 drop table if exists `permission`;
 create table if not exists `permission`
 (
-    `id`              bigint(18) unsigned auto_increment comment '权限 id',
+    `permission_id`              bigint(18) unsigned auto_increment comment '权限 id',
     `permission_code` varchar(50)      not null comment '权限 code',
     `permission_name` varchar(50)      not null comment '权限名',
     `status`          varchar(10)      not null default 'VALID' comment '状态[有效: VALID, 无效: INVALID]',
@@ -59,7 +59,7 @@ create table if not exists `permission`
     `version`         int(11) unsigned not null default 1 comment '乐观锁',
     `del_flag`        tinyint(1)       not null default 0 comment '逻辑删除',
 
-    primary key (`id`),
+    primary key (`permission_id`),
     unique index permission_code_idx (`permission_code`) using btree,
     index permission_name_idx (`permission_name`) using btree,
     index permission_status_idx (`status`) using btree
@@ -69,7 +69,7 @@ create table if not exists `permission`
 drop table if exists `user_role`;
 create table if not exists `user_role`
 (
-    `id`          bigint(18) unsigned auto_increment comment '权限 id',
+    `user_role_id`          bigint(18) unsigned auto_increment comment '权限 id',
     `user_id`     bigint(18) unsigned comment '用户 id',
     `role_id`     bigint(18) unsigned comment '角色 id',
     `create_date` datetime         not null comment '创建时间',
@@ -77,7 +77,7 @@ create table if not exists `user_role`
     `version`     int(11) unsigned not null default 1 comment '乐观锁',
     `del_flag`    tinyint(1)       not null default 0 comment '逻辑删除',
 
-    primary key (`id`),
+    primary key (`user_role_id`),
     index user_id_idx (`user_id`) using btree,
     index role_id_idx (`role_id`) using btree
 ) comment '用户-角色关联表';
@@ -86,7 +86,7 @@ create table if not exists `user_role`
 drop table if exists `role_permission`;
 create table if not exists `role_permission`
 (
-    `id`            bigint(18) unsigned auto_increment comment '权限 id',
+    `role_permission_id`            bigint(18) unsigned auto_increment comment '权限 id',
     `role_id`       bigint(18) unsigned comment '角色 id',
     `permission_id` bigint(18) unsigned comment '权限 id',
     `create_date`   datetime         not null comment '创建时间',
@@ -94,7 +94,7 @@ create table if not exists `role_permission`
     `version`       int(11) unsigned not null default 1 comment '乐观锁',
     `del_flag`      tinyint(1)       not null default 0 comment '逻辑删除',
 
-    primary key (`id`),
+    primary key (`role_permission_id`),
     index role_id_idx (`role_id`) using btree,
     index permission_id_idx (`permission_id`) using btree
 ) comment '角色-权限关联表';
@@ -102,7 +102,7 @@ create table if not exists `role_permission`
 drop table if exists job_info;
 create table if not exists job_info
 (
-    `id`                bigint(18) unsigned auto_increment comment '任务 id',
+    `job_id`                bigint(18) unsigned auto_increment comment '任务 id',
     `job_code`          varchar(100)     not null comment '任务 code',
     `job_name`          varchar(100)     not null comment '任务 name',
     `job_desc`          varchar(100)     not null comment '任务描述',
@@ -114,14 +114,14 @@ create table if not exists job_info
     `version`           int(11) unsigned not null default 1 comment '乐观锁',
     `del_flag`          tinyint(1)       not null default 0 comment '逻辑删除',
 
-    primary key (`id`),
+    primary key (`job_id`),
     unique index job_code_idx (`job_code`) using btree
 ) comment '任务表';
 
 drop table if exists `job_his`;
 create table if not exists `job_his`
 (
-    `id`          bigint(18) unsigned auto_increment comment '任务执行记录 id',
+    `job_his_id`          bigint(18) unsigned auto_increment comment '任务执行记录 id',
     `job_id`      bigint(18) unsigned not null comment '任务 id',
     `job_code`    varchar(100)        not null comment '任务 code',
     `job_name`    varchar(100)        not null comment '任务 name',
@@ -137,7 +137,7 @@ create table if not exists `job_his`
     `version`     int(11) unsigned    not null default 1 comment '乐观锁',
     `del_flag`    tinyint(1)          not null default 0 comment '逻辑删除',
 
-    primary key (`id`),
+    primary key (`job_his_id`),
     index job_id_idx (`job_id`) using btree,
     index job_status_idx (`job_status`) using btree,
     index start_date_idx (`start_date`) using btree,
@@ -147,7 +147,7 @@ create table if not exists `job_his`
 drop table if exists `template`;
 create table if not exists `template`
 (
-    `id`            bigint(18) unsigned auto_increment comment '任务执行记录 id',
+    `template_id`            bigint(18) unsigned auto_increment comment '任务执行记录 id',
     `template_code` varchar(10)      not null comment '模板类型[EMAIL: 邮件, SMS: sms]',
     `content`       text             null comment '模板内容',
     `create_date`   datetime         not null comment '创建时间',
@@ -155,14 +155,14 @@ create table if not exists `template`
     `version`       int(11) unsigned not null default 1 comment '乐观锁',
     `del_flag`      tinyint(1)       not null default 0 comment '逻辑删除',
 
-    primary key (`id`),
+    primary key (`template_id`),
     unique index type_idx (`template_code`) using btree
 ) comment '模板表';
 
 drop table if exists `object_storage`;
 create table if not exists `object_storage`
 (
-    `id`           bigint(18) unsigned auto_increment comment 'os id',
+    `os_id`           bigint(18) unsigned auto_increment comment 'os id',
     `os_data`      mediumtext       null comment 'os data',
     `os_name`      varchar(50)      not null comment 'os name',
     `os_path`      varchar(255)     null comment 'os 存储路径',
@@ -175,6 +175,6 @@ create table if not exists `object_storage`
     `version`      int(11) unsigned not null default 1 comment '乐观锁',
     `del_flag`     tinyint(1)       not null default 0 comment '逻辑删除',
 
-    primary key (`id`),
+    primary key (`os_id`),
     index os_name_idx (`os_name`) using btree
 ) comment '对象存储表';

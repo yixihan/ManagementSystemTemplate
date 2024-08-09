@@ -63,7 +63,7 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements Ro
             return List.of();
         }
         List<RoleVO> roleList = lambdaQuery()
-                .in(Role::getId, roleIdList)
+                .in(Role::getRoleId, roleIdList)
                 .list()
                 .stream()
                 .map(it -> BeanUtil.toBean(it, RoleVO.class))
@@ -104,7 +104,7 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements Ro
         return lambdaQuery()
                 .eq(Role::getRoleCode, RoleEnums.USER)
                 .one()
-                .getId();
+                .getRoleId();
     }
 
     @Override
@@ -148,11 +148,11 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements Ro
 
         // 删除用户角色表该角色的数据
         List<Long> userRoleIdList = userRoleService.lambdaQuery()
-                .select(UserRole::getId)
+                .select(UserRole::getUserRoleId)
                 .eq(UserRole::getRoleId, roleId)
                 .list()
                 .stream()
-                .map(UserRole::getId)
+                .map(UserRole::getUserRoleId)
                 .toList();
 
         userRoleService.removeBatchByIds(userRoleIdList);
@@ -195,7 +195,7 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements Ro
 
     private Role reqToRole(RoleModifyReq req) {
         Role role = new Role();
-        role.setId(req.getRoleId());
+        role.setRoleId(req.getRoleId());
         role.setRoleCode(role.getRoleCode());
         role.setRoleName(role.getRoleName());
         role.setStatus(req.getStatus());
@@ -204,11 +204,11 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements Ro
 
     private RoleVO roleToRoleVO(Role role) {
         RoleVO vo = new RoleVO();
-        vo.setRoleId(role.getId());
+        vo.setRoleId(role.getRoleId());
         vo.setRoleCode(role.getRoleCode());
         vo.setRoleName(role.getRoleName());
         vo.setStatus(role.getStatus());
-        vo.setPermissionList(permissionService.getRolePermission(role.getId()));
+        vo.setPermissionList(permissionService.getRolePermission(role.getRoleId()));
         return vo;
     }
 }

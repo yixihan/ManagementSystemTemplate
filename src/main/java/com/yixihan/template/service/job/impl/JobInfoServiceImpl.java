@@ -8,11 +8,11 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.yixihan.template.common.enums.CommonStatusEnums;
 import com.yixihan.template.job.JobInterface;
 import com.yixihan.template.job.JobRunner;
-import com.yixihan.template.model.job.Job;
-import com.yixihan.template.mapper.job.JobMapper;
+import com.yixihan.template.model.job.JobInfo;
+import com.yixihan.template.mapper.job.JobInfoMapper;
 import com.yixihan.template.model.job.JobHis;
 import com.yixihan.template.service.job.JobHisService;
-import com.yixihan.template.service.job.JobService;
+import com.yixihan.template.service.job.JobInfoService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.yixihan.template.common.util.Assert;
 import com.yixihan.template.common.util.PageUtil;
@@ -39,7 +39,7 @@ import java.util.Map;
  */
 @Slf4j
 @Service
-public class JobServiceImpl extends ServiceImpl<JobMapper, Job> implements JobService {
+public class JobInfoServiceImpl extends ServiceImpl<JobInfoMapper, JobInfo> implements JobInfoService {
 
     @Resource
     private JobHisService jobHisService;
@@ -47,21 +47,21 @@ public class JobServiceImpl extends ServiceImpl<JobMapper, Job> implements JobSe
     static Map<String, JobInterface> jobInterfaceMap;
 
     @Override
-    public Job getJobByJobCode(String jobCode) {
+    public JobInfo getJobByJobCode(String jobCode) {
         Assert.notBlank(jobCode);
 
         return lambdaQuery()
-                .eq(Job::getJobCode, jobCode)
+                .eq(JobInfo::getJobCode, jobCode)
                 .one();
     }
 
     @Override
-    public PageVO<Job> queryJob(JobQueryReq req) {
-        Page<Job> page = lambdaQuery()
-                .eq(StrUtil.isNotBlank(req.getJobCode()), Job::getJobCode, req.getJobCode())
-                .eq(StrUtil.isNotBlank(req.getJobName()), Job::getJobCode, req.getJobName())
-                .in(CollUtil.isNotEmpty(req.getJobStatus()), Job::getJobStatus, req.getJobStatus())
-                .orderByDesc(Job::getLastExecuteDate)
+    public PageVO<JobInfo> queryJob(JobQueryReq req) {
+        Page<JobInfo> page = lambdaQuery()
+                .eq(StrUtil.isNotBlank(req.getJobCode()), JobInfo::getJobCode, req.getJobCode())
+                .eq(StrUtil.isNotBlank(req.getJobName()), JobInfo::getJobCode, req.getJobName())
+                .in(CollUtil.isNotEmpty(req.getJobStatus()), JobInfo::getJobStatus, req.getJobStatus())
+                .orderByDesc(JobInfo::getLastExecuteDate)
                 .page(PageUtil.toPage(req));
         return PageUtil.pageToPageVO(page);
     }
@@ -70,12 +70,12 @@ public class JobServiceImpl extends ServiceImpl<JobMapper, Job> implements JobSe
     public void triggerJob(JobParam param) {
         initJobInterfaceList();
         JobInterface jobInterface = jobInterfaceMap.get(param.getJobCode());
-        Job job = getJobByJobCode(param.getJobCode());
+        JobInfo jobInfo = getJobByJobCode(param.getJobCode());
 
         if (ObjUtil.isNull(jobInterface)) {
-            Panic.noSuchJob(StrUtil.format("job code[{}] is not found", param.getJobCode()));
+            Panic.noSuchJob(StrUtil.format("jobInfo code[{}] is not found", param.getJobCode()));
         }
-        if (CommonStatusEnums.INVALID.name().equals(job.getJobStatus())) {
+        if (CommonStatusEnums.INVALID.name().equals(jobInfo.getJobStatus())) {
             Panic.invalidStatus(param.getJobCode());
         }
 
@@ -83,22 +83,22 @@ public class JobServiceImpl extends ServiceImpl<JobMapper, Job> implements JobSe
     }
 
     @Override
-    public Job updateJob(JobUpdateReq req) {
+    public JobInfo updateJob(JobUpdateReq req) {
         Assert.notNull(req.getJobId());
         Assert.isEnum(req.getJobStatus(), CommonStatusEnums.class);
 
-        Job job = getById(req.getJobId());
+        JobInfo jobInfo = getById(req.getJobId());
 
-        if (ObjUtil.isNull(job)) {
+        if (ObjUtil.isNull(jobInfo)) {
             Panic.noSuchEntry(req.getJobId());
         }
         if (!CommonStatusEnums.INVALID.name().equals(req.getJobStatus()) && !CommonStatusEnums.VALID.name().equals(req.getJobStatus())) {
             Panic.invalidParam(req.getJobStatus());
         }
 
-        job.setJobStatus(req.getJobStatus());
-        updateById(job);
-        return job;
+        jobInfo.setJobStatus(req.getJobStatus());
+        updateById(jobInfo);
+        return jobInfo;
     }
 
     @Override
@@ -115,7 +115,7 @@ public class JobServiceImpl extends ServiceImpl<JobMapper, Job> implements JobSe
 
     private void initJobInterfaceList() {
         if (CollUtil.isEmpty(jobInterfaceMap)) {
-            synchronized (JobServiceImpl.class) {
+            synchronized (JobInfoServiceImpl.class) {
                 if (CollUtil.isEmpty(jobInterfaceMap)) {
                     jobInterfaceMap = new HashMap<>();
                     for (Map.Entry<String, JobInterface> entry : SpringUtil.getBeansOfType(JobInterface.class).entrySet()) {

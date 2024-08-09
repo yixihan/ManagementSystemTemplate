@@ -231,7 +231,7 @@ public class AuthService {
 
         // 生成 JwtToken
         Map<String, Object> payload = new HashMap<>(16);
-        payload.put(AuthConstant.USER_ID, user.getId());
+        payload.put(AuthConstant.USER_ID, user.getUserId());
         payload.put(AuthConstant.USER_NAME, user.getUserName());
         String token = JwtUtil.createJwtToken(user.getUserPassword(), payload);
 

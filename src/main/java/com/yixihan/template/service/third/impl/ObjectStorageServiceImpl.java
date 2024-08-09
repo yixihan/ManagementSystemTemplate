@@ -72,7 +72,7 @@ public class ObjectStorageServiceImpl extends ServiceImpl<ObjectStorageMapper, O
     @Override
     public void certificateCallback(ObjectStorage os) {
         Assert.notNull(os);
-        Assert.notNull(os.getId());
+        Assert.notNull(os.getOsId());
         save(os);
     }
 
@@ -131,7 +131,7 @@ public class ObjectStorageServiceImpl extends ServiceImpl<ObjectStorageMapper, O
         }
 
         save(os);
-        return os.getId();
+        return os.getOsId();
     }
 
     @Override

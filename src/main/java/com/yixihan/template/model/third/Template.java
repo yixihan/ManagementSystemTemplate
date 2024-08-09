@@ -1,5 +1,7 @@
 package com.yixihan.template.model.third;
 
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
 import com.yixihan.template.model.BaseModel;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
@@ -22,17 +24,23 @@ import java.io.Serial;
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
 @Schema(description = "模板表")
+@SuppressWarnings("unused")
 public class Template extends BaseModel {
 
     @Serial
     private static final long serialVersionUID = 1208375875778951575L;
+
+    @Schema(description = "主键 id")
+    @TableId(value = "template_id", type = IdType.AUTO)
+    private Long templateId;
+
     @Schema(description = "模板 code")
     private String templateCode;
 
     @Schema(description = "模板内容")
     private String content;
 
-    public static final String ID = "id";
+    public static final String TEMPLATE_ID = "template_id";
 
     public static final String TEMPLATE_CODE = "template_code";
 

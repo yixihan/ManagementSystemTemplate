@@ -2,6 +2,8 @@ package com.yixihan.template.model.user;
 
 import java.io.Serial;
 
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
 import com.yixihan.template.model.BaseModel;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
@@ -22,11 +24,16 @@ import lombok.experimental.Accessors;
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
 @Schema(description = "角色表")
+@SuppressWarnings("unused")
 public class Role extends BaseModel {
 
 
     @Serial
     private static final long serialVersionUID = -6139564426835489854L;
+
+    @Schema(description = "主键 id")
+    @TableId(value = "role_id", type = IdType.AUTO)
+    private Long roleId;
 
     @Schema(description = "角色 code")
     private String roleCode;
@@ -37,7 +44,7 @@ public class Role extends BaseModel {
     @Schema(description = "状态[有效: VALID, 无效: INVALID]")
     private String status;
 
-    public static final String ID = "id";
+    public static final String ROLE_ID = "role_id";
 
     public static final String ROLE_CODE = "role_code";
 

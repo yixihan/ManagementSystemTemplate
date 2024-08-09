@@ -144,7 +144,7 @@ public class RegisterServiceImpl implements RegisterService {
 
         // 新增用户角色
         UserRole userRole = new UserRole();
-        userRole.setUserId(user.getId());
+        userRole.setUserId(user.getUserId());
         userRole.setRoleId(roleService.getUserRoleId());
         Assert.isTrue(userRoleService.save(userRole), ExceptionEnums.FAILED_TYPE_BUSINESS);
     }

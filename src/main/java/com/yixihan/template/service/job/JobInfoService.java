@@ -1,6 +1,6 @@
 package com.yixihan.template.service.job;
 
-import com.yixihan.template.model.job.Job;
+import com.yixihan.template.model.job.JobInfo;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.yixihan.template.model.job.JobHis;
 import com.yixihan.template.vo.req.job.JobHisQueryReq;
@@ -17,15 +17,15 @@ import com.yixihan.template.vo.resp.base.PageVO;
  * @author yixihan
  * @since 2024-05-24
  */
-public interface JobService extends IService<Job> {
+public interface JobInfoService extends IService<JobInfo> {
 
-    Job getJobByJobCode(String jobCode);
+    JobInfo getJobByJobCode(String jobCode);
 
-    PageVO<Job> queryJob(JobQueryReq req);
+    PageVO<JobInfo> queryJob(JobQueryReq req);
 
     void triggerJob(JobParam param);
 
-    Job updateJob(JobUpdateReq req);
+    JobInfo updateJob(JobUpdateReq req);
 
     PageVO<JobHis> queryJobHis(JobHisQueryReq req);
 }
