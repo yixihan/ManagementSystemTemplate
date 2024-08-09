@@ -3,9 +3,10 @@ package com.yixihan.template.common.util;
 import cn.hutool.core.util.StrUtil;
 import com.yixihan.template.common.enums.ExceptionEnums;
 import com.yixihan.template.common.exception.*;
+import com.yixihan.template.model.BaseModel;
 
 /**
- * 异常工具
+ * 异常抛出工具
  *
  * @author yixihan
  * @date 2024-05-26 11:44
@@ -20,12 +21,16 @@ public class Panic {
         throw new AuthException(enums);
     }
 
-    public static void noSuchJob(String errMsg) {
-        throw new JobException(errMsg);
+    public static void noSuchJob() {
+        throw new JobException(ExceptionEnums.NO_SUCH_JOB_ERR);
     }
 
-    public static void noSuchEntry(Long id) {
-        throw new InvalidEntryException(StrUtil.format("can not find Entry[Id : {}]", id));
+    public static void noSuchEntry(BaseModel model) {
+        throw new InvalidEntryException(StrUtil.format("can not find {}[PrimaryKey : {}]", model.getClass().getSimpleName(), model.getPK()));
+    }
+
+    public static void noSuchEntry(Long pk) {
+        throw new InvalidEntryException(StrUtil.format("can not find Entry[PrimaryKey : {}]", pk));
     }
 
     public static void invalidStatus(String mark) {

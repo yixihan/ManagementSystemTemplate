@@ -49,6 +49,10 @@ public enum ExceptionEnums {
      */
     NULL_ERR(10003, "空指针异常"),
 
+    INVALID_CODE_ERR(10004, "失效状态异常"),
+
+    INVALID_REQ_ERR(10005, "错误的参数异常"),
+
 
 
     // ====================== Auth Exception ======================
@@ -61,14 +65,19 @@ public enum ExceptionEnums {
     PASSWORD_ERR(20007, "密码错误"),
     CODE_EXPIRE_ERR(20008, "验证码过期"),
     CODE_VALIDATE_ERROR(20009, "验证码校验错误"),
-
-
+    
     // ====================== Third Exception ======================
     PICTURE_CODE_ERR(30001, "图片验证码生成异常"),
     PICTURE_QR_ERR(30002, "二维码生成异常"),
     EMAIL_SEND_ERR(30003, "邮件发送失败"),
-    SMS_SEND_ERR(30004, "短信发送失败")
+    SMS_SEND_ERR(30004, "短信发送失败"),
+    
 
+    // ====================== JOB Exception ======================
+    JOB_ERR(40001, "job 异常"),
+    NO_SUCH_JOB_ERR(40002, "job 不存在"),
+    INVALID_JOB_ERR(40003, "job 已失效"),
+    JOB_RUNN_ERR(40004, "job 执行失败"),
     ;
 
 

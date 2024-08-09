@@ -10,13 +10,22 @@ import java.io.Serial;
  * @author yixihan
  * @date 2024-05-29 09:49
  */
-public class PictureException extends BizException{
+@SuppressWarnings("unused")
+public class PictureException extends BizException {
 
     @Serial
     private static final long serialVersionUID = -8022684844350624592L;
 
+    public PictureException() {
+        super(ExceptionEnums.PICTURE_CODE_ERR);
+    }
+
     public PictureException(String message) {
         super(message);
+    }
+
+    public PictureException(Throwable e) {
+        super(e);
     }
 
     public PictureException(ExceptionEnums enums) {

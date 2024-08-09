@@ -73,7 +73,7 @@ public class JobInfoServiceImpl extends ServiceImpl<JobInfoMapper, JobInfo> impl
         JobInfo jobInfo = getJobByJobCode(param.getJobCode());
 
         if (ObjUtil.isNull(jobInterface)) {
-            Panic.noSuchJob(StrUtil.format("jobInfo code[{}] is not found", param.getJobCode()));
+            Panic.noSuchJob();
         }
         if (CommonStatusEnums.INVALID.name().equals(jobInfo.getJobStatus())) {
             Panic.invalidStatus(param.getJobCode());
