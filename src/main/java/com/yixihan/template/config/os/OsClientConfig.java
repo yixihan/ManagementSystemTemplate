@@ -116,6 +116,8 @@ public class OsClientConfig {
         com.qiniu.storage.Configuration cfg = new com.qiniu.storage.Configuration(com.qiniu.storage.Region.region0());
         // 指定分片上传版本
         cfg.resumableUploadAPIVersion = com.qiniu.storage.Configuration.ResumableUploadAPIVersion.V2;
+        // 设置请求协议为http
+        cfg.useHttpsDomains = true;
         // ...其他参数参考类注释
         return new com.qiniu.storage.UploadManager(cfg);
     }
